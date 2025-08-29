@@ -1,0 +1,52 @@
+export const APP_CONFIG: { mode: "coming-soon" | "maintenance" | "live" } = {
+  mode: "live",
+};
+export const DATABASE_PREFIX = "shadcn";
+export const LOGIN_URL = "/login";
+export const AFTER_LOGIN_URL = "/app";
+export const APPLICATION_NAME = "Next.js Ready-to-Go";
+
+export const publicPathsConfig = {
+  // Exact paths that should be publicly accessible
+  exactPaths: ["/"],
+
+  // Exact paths for authentication
+  authPaths: ["/login", "/register", "/forgot-password"],
+
+  // Path prefixes - any path starting with these will be public
+  prefixes: ["/docs/", "/api/auth/"],
+};
+
+export function isAuthPath(pathname: string): boolean {
+  // Check prefix matches
+  for (const prefixAuth of publicPathsConfig.authPaths) {
+    if (pathname.startsWith(prefixAuth)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export function isPublicPath(pathname: string): boolean {
+  // Check exact path matches
+  if (publicPathsConfig.exactPaths.includes(pathname)) {
+    return true;
+  }
+
+  // Check prefix matches
+  for (const prefix of publicPathsConfig.prefixes) {
+    if (pathname.startsWith(prefix)) {
+      return true;
+    }
+  }
+
+  // Check prefix matches
+  for (const prefixAuth of publicPathsConfig.authPaths) {
+    if (pathname.startsWith(prefixAuth)) {
+      return true;
+    }
+  }
+
+  return false;
+}
