@@ -1,20 +1,20 @@
-export const APP_CONFIG: { mode: "coming-soon" | "maintenance" | "live" } = {
-  mode: "live",
+export const APP_CONFIG: { mode: 'coming-soon' | 'maintenance' | 'live' } = {
+  mode: 'live',
 };
-export const DATABASE_PREFIX = "shadcn";
-export const LOGIN_URL = "/login";
-export const AFTER_LOGIN_URL = "/app";
-export const APPLICATION_NAME = "Next.js Ready-to-Go";
+export const DATABASE_PREFIX = 'shadcn';
+export const LOGIN_URL = '/login';
+export const AFTER_LOGIN_URL = '/app';
+export const APPLICATION_NAME = 'Next.js Ready-to-Go';
 
 export const publicPathsConfig = {
   // Exact paths that should be publicly accessible
-  exactPaths: ["/"],
+  exactPaths: ['/'],
 
   // Exact paths for authentication
-  authPaths: ["/login", "/register", "/forgot-password"],
+  authPaths: ['/login', '/register', '/forgot-password'],
 
   // Path prefixes - any path starting with these will be public
-  prefixes: ["/docs/", "/api/auth/"],
+  prefixes: ['/docs/', '/api/auth/'],
 };
 
 export function isAuthPath(pathname: string): boolean {

@@ -34,12 +34,12 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # ------------------ Migration Script
-# COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
+COPY --from=builder --chown=nextjs:nodejs /app/drizzle ./drizzle
 COPY --from=builder --chown=nextjs:nodejs /app/run.sh ./run.sh
 
 RUN chmod +x ./run.sh
 # ------------------ Migration Script
-# RUN cd drizzle/migrate && bun install
+RUN cd drizzle/migrate && bun install
 
 WORKDIR /app
 

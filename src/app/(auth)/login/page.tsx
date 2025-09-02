@@ -1,47 +1,58 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import z from "zod/mini";
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useState, useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import z from 'zod/mini';
 
-import { FormButton } from "@/components/form/form-button";
-import { FormError } from "@/components/form/form-error";
-import { FormInput } from "@/components/form/form-input";
-import { FormPassword } from "@/components/form/form-password";
-import { Form } from "@/components/ui/form";
-import { LoginSchema, LoginType } from "@/app/(auth)/login/type";
-import { toast } from "sonner";
+import { FormButton } from '@/components/form/form-button';
+import { FormError } from '@/components/form/form-error';
+import { FormInput } from '@/components/form/form-input';
+import { FormPassword } from '@/components/form/form-password';
+import { Form } from '@/components/ui/form';
+import { LoginSchema, LoginType } from '@/app/(auth)/login/type';
+import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
+import { AFTER_LOGIN_URL } from '@/config';
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [errorForm, setErrorForm] = useState<{
+    code: string | number;
+    message: string;
+  } | null>(null);
   const form = useForm<LoginType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
-    setLoading(true);
-    console.log(values);
-    const isSuccess = Math.random() > 0.5;
-    const isError = !isSuccess;
-    if (!isError) {
-      toast.success("Login successful! Redirecting to your dashboard.");
-    } else {
-      setError("Login Failed");
-    }
-    setLoading(false);
+    startTransition(async () => {
+      await authClient.signIn.email(values, {
+        onError(ctx) {
+          setErrorForm({
+            code: ctx.error.code,
+            message: ctx.error.message,
+          });
+        },
+        onSuccess() {
+          router.push(AFTER_LOGIN_URL);
+          toast.success('Login successful! Redirecting to your dashboard.');
+        },
+      });
+    });
   };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <h1 className="text-center text-3xl font-bold">Login</h1>
-        {error && <FormError error={{ message: error }} />}
+        <FormError error={errorForm ?? undefined} />
         <FormInput<LoginType>
           title="Email"
           schema="email"
@@ -54,7 +65,7 @@ export default function LoginPage() {
         >
           Forgot your password?
         </Link>
-        <FormButton className="w-full" isLoading={loading}>
+        <FormButton className="w-full" isLoading={isPending}>
           Login
         </FormButton>
         <div className="flex justify-center">

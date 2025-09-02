@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { InputHTMLAttributes } from "react";
-import { useFormContext } from "react-hook-form";
+import { InputHTMLAttributes } from 'react';
+import { useFormContext } from 'react-hook-form';
 
 import {
   FormControl,
@@ -9,8 +9,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import PasswordInput from "@/components/ui/input-password";
+} from '@/components/ui/form';
+import PasswordInput from '@/components/ui/input-password';
 
 type Props<S> = {
   title: string;
