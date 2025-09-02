@@ -1,0 +1,13 @@
+{
+  "description": "Used for installing and running the migration on the Dockerfile runner.",
+  "license": "MIT",
+  "scripts": {
+    "db:migrate": "bun ./migrate.ts"
+  },
+  "dependencies": {
+    "dotenv": "17.2.1",
+    "drizzle-orm": "0.44.5",
+    "postgres": "3.4.7",
+    "typescript": "5.9.2"
+  }
+}

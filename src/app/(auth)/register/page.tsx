@@ -1,51 +1,66 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import z from "zod/mini";
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useState, useTransition } from 'react';
+import { useForm } from 'react-hook-form';
+import z from 'zod/mini';
 
-import { LOGIN_URL } from "@/config";
-import { FormButton } from "@/components/form/form-button";
-import { FormError } from "@/components/form/form-error";
-import { FormInput } from "@/components/form/form-input";
-import { FormPasswordCustom } from "@/components/form/form-password-custom";
-import { Form } from "@/components/ui/form";
-import { RegisterSchema, RegisterType } from "@/app/(auth)/register/type";
+import { LOGIN_URL } from '@/config';
+import { FormButton } from '@/components/form/form-button';
+import { FormError } from '@/components/form/form-error';
+import { FormInput } from '@/components/form/form-input';
+import { FormPasswordCustom } from '@/components/form/form-password-custom';
+import { Form } from '@/components/ui/form';
+import { RegisterSchema, RegisterType } from '@/app/(auth)/register/type';
+import { authClient } from '@/lib/auth-client';
+import { FormSuccess } from '@/components/form/form-success';
 
 export default function RegisterPage() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+  const [errorForm, setErrorForm] = useState<{
+    code: string | number;
+    message: string;
+  } | null>(null);
+  const [successForm, setSuccessForm] = useState<{
+    code: string | number;
+    message: string;
+  } | null>(null);
+
   const form = useForm<RegisterType>({
     resolver: zodResolver(RegisterSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
+      name: '',
+      email: '',
+      password: '',
     },
   });
-  const onSubmit = async (values: z.infer<typeof RegisterSchema>) => {
-    setLoading(true);
-    console.log(values);
-    const isSuccess = Math.random() > 0.5;
-    const isError = !isSuccess;
-    if (!isError) {
-      toast.success(
-        "Registration successful! Check your email to verify your account."
-      );
-    } else {
-      setError("Registration Failed");
-    }
-
-    setLoading(false);
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
+    startTransition(async () => {
+      const { data, error } = await authClient.signUp.email(values, {
+        onError(ctx) {
+          setErrorForm({
+            code: ctx.error.code,
+            message: ctx.error.message,
+          });
+        },
+        onSuccess(ctx) {
+          setSuccessForm({
+            code: "You're registered!",
+            message: 'Please check your email to verify your account.',
+          });
+          form.reset();
+        },
+      });
+      console.log(data, error);
+    });
   };
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <h1 className="text-center text-3xl font-bold">Register</h1>
-        {error && <FormError error={{ message: error }} />}
+        <FormError error={errorForm ?? undefined} />
+        <FormSuccess success={successForm ?? undefined} />
         <FormInput<RegisterType>
           title="Name"
           schema="name"
@@ -57,7 +72,7 @@ export default function RegisterPage() {
           placeholder="example@email.com"
         />
         <FormPasswordCustom<RegisterType> title="Password" schema="password" />
-        <FormButton className="w-full" isLoading={loading}>
+        <FormButton className="w-full" isLoading={isPending}>
           Register
         </FormButton>
         <div className="flex justify-center">

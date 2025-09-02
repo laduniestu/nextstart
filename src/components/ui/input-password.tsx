@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { CheckIcon, EyeIcon, EyeOffIcon, XIcon } from 'lucide-react';
+import { useId, useMemo, useState } from 'react';
 
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/ui/input';
 
 export type PasswordInputProps = {
   value: string;
@@ -24,10 +24,10 @@ export default function PasswordInput({
 
   const checkStrength = (pass: string) => {
     const requirements = [
-      { regex: /.{8,}/, text: "At least 8 characters" },
-      { regex: /[0-9]/, text: "At least 1 number" },
-      { regex: /[a-z]/, text: "At least 1 lowercase letter" },
-      { regex: /[A-Z]/, text: "At least 1 uppercase letter" },
+      { regex: /.{8,}/, text: 'At least 8 characters' },
+      { regex: /[0-9]/, text: 'At least 1 number' },
+      { regex: /[a-z]/, text: 'At least 1 lowercase letter' },
+      { regex: /[A-Z]/, text: 'At least 1 uppercase letter' },
     ];
 
     return requirements.map((req) => ({
@@ -43,18 +43,18 @@ export default function PasswordInput({
   }, [strength]);
 
   const getStrengthColor = (score: number) => {
-    if (score === 0) return "bg-border";
-    if (score <= 1) return "bg-red-500";
-    if (score <= 2) return "bg-orange-500";
-    if (score === 3) return "bg-amber-500";
-    return "bg-emerald-500";
+    if (score === 0) return 'bg-border';
+    if (score <= 1) return 'bg-red-500';
+    if (score <= 2) return 'bg-orange-500';
+    if (score === 3) return 'bg-amber-500';
+    return 'bg-emerald-500';
   };
 
   const getStrengthText = (score: number) => {
-    if (score === 0) return "Enter a password";
-    if (score <= 2) return "Weak password";
-    if (score === 3) return "Medium password";
-    return "Strong password";
+    if (score === 0) return 'Enter a password';
+    if (score <= 2) return 'Weak password';
+    if (score === 3) return 'Medium password';
+    return 'Strong password';
   };
 
   const allRequirementsMet = strengthScore === 4;
@@ -69,7 +69,7 @@ export default function PasswordInput({
             id={inputId}
             className="pe-9"
             placeholder="Password"
-            type={isVisible ? "text" : "password"}
+            type={isVisible ? 'text' : 'password'}
             value={value}
             onChange={onChange}
             aria-describedby={`${inputId}-description`}
@@ -78,7 +78,7 @@ export default function PasswordInput({
             className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
             type="button"
             onClick={toggleVisibility}
-            aria-label={isVisible ? "Hide password" : "Show password"}
+            aria-label={isVisible ? 'Hide password' : 'Show password'}
             aria-pressed={isVisible}
             aria-controls="password"
           >
@@ -137,12 +137,12 @@ export default function PasswordInput({
                 )}
                 <span
                   className={`text-xs ${
-                    req.met ? "text-emerald-600" : "text-muted-foreground"
+                    req.met ? 'text-emerald-600' : 'text-muted-foreground'
                   }`}
                 >
                   {req.text}
                   <span className="sr-only">
-                    {req.met ? " - Requirement met" : " - Requirement not met"}
+                    {req.met ? ' - Requirement met' : ' - Requirement not met'}
                   </span>
                 </span>
               </li>
