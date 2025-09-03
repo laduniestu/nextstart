@@ -1,5 +1,4 @@
-import React from 'react';
-import LogoutButton from '../(auth)/_components/logout-button';
+import LogoutButton from '@/app/auth/_components/logout-button';
 
 export default function Page() {
   return (

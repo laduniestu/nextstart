@@ -66,26 +66,26 @@ export default function PasswordInput({
       <div className="*:not-first:mt-2">
         <div className="relative">
           <Input
-            id={inputId}
+            aria-describedby={`${inputId}-description`}
             className="pe-9"
+            id={inputId}
+            onChange={onChange}
             placeholder="Password"
             type={isVisible ? 'text' : 'password'}
             value={value}
-            onChange={onChange}
-            aria-describedby={`${inputId}-description`}
           />
           <button
-            className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-            type="button"
-            onClick={toggleVisibility}
+            aria-controls="password"
             aria-label={isVisible ? 'Hide password' : 'Show password'}
             aria-pressed={isVisible}
-            aria-controls="password"
+            className="absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md text-muted-foreground/80 outline-none transition-[color,box-shadow] hover:text-foreground focus:z-10 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={toggleVisibility}
+            type="button"
           >
             {isVisible ? (
-              <EyeOffIcon size={16} aria-hidden="true" />
+              <EyeOffIcon aria-hidden="true" size={16} />
             ) : (
-              <EyeIcon size={16} aria-hidden="true" />
+              <EyeIcon aria-hidden="true" size={16} />
             )}
           </button>
         </div>
@@ -95,44 +95,44 @@ export default function PasswordInput({
       {shouldShowRequirements && (
         <>
           <div
-            className="bg-border mt-3 mb-4 h-1 w-full overflow-hidden rounded-full"
-            role="progressbar"
-            aria-valuenow={strengthScore}
-            aria-valuemin={0}
-            aria-valuemax={4}
             aria-label="Password strength"
+            aria-valuemax={4}
+            aria-valuemin={0}
+            aria-valuenow={strengthScore}
+            className="mt-3 mb-4 h-1 w-full overflow-hidden rounded-full bg-border"
+            role="progressbar"
           >
             <div
               className={`h-full ${getStrengthColor(
                 strengthScore
               )} transition-all duration-500 ease-out`}
               style={{ width: `${(strengthScore / 4) * 100}%` }}
-            ></div>
+            />
           </div>
 
           {/* Password strength description */}
           <p
+            className="mb-2 font-medium text-foreground text-sm"
             id={`${id}-description`}
-            className="text-foreground mb-2 text-sm font-medium"
           >
             {getStrengthText(strengthScore)}. Must contain:
           </p>
 
           {/* Password requirements list */}
-          <ul className="space-y-1.5" aria-label="Password requirements">
-            {strength.map((req, index) => (
-              <li key={index} className="flex items-center gap-2">
+          <ul aria-label="Password requirements" className="space-y-1.5">
+            {strength.map((req) => (
+              <li className="flex items-center gap-2" key={req.text}>
                 {req.met ? (
                   <CheckIcon
-                    size={16}
-                    className="text-emerald-500"
                     aria-hidden="true"
+                    className="text-emerald-500"
+                    size={16}
                   />
                 ) : (
                   <XIcon
-                    size={16}
-                    className="text-muted-foreground/80"
                     aria-hidden="true"
+                    className="text-muted-foreground/80"
+                    size={16}
                   />
                 )}
                 <span

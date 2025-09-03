@@ -48,14 +48,14 @@ export function FormDate<S>({
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
-                  id={schema}
-                  variant={'outline'}
                   className={cn(
                     'w-full pl-3 text-left font-normal',
                     !field.value && 'text-muted-foreground',
                     className
                   )}
                   disabled={disabled}
+                  id={schema}
+                  variant={'outline'}
                 >
                   {field.value ? (
                     format(field.value, 'PPP')
@@ -66,12 +66,12 @@ export function FormDate<S>({
                 </Button>
               </FormControl>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent align="start" className="w-auto p-0">
               <Calendar
-                mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
                 initialFocus
+                mode="single"
+                onSelect={field.onChange}
+                selected={field.value}
               />
             </PopoverContent>
           </Popover>

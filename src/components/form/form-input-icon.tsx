@@ -1,8 +1,7 @@
 'use client';
 
-import { InputHTMLAttributes } from 'react';
-
-import { TablerIcon } from '@tabler/icons-react';
+import type { TablerIcon } from '@tabler/icons-react';
+import type { InputHTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import {
@@ -45,11 +44,11 @@ export function FormInputIcon<S>({
             <InputIcon
               {...field}
               {...props}
-              id={schema}
-              icon={icon}
-              iconPosition={iconPosition}
-              iconClassName={iconClassName}
               className={cn(className)}
+              icon={icon}
+              iconClassName={iconClassName}
+              iconPosition={iconPosition}
+              id={schema}
             />
           </FormControl>
           <FormMessage />

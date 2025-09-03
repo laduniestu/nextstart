@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from 'react';
 
 import { useFormContext } from 'react-hook-form';
 
@@ -41,8 +41,8 @@ export function FormInput<S>({
             <Input
               {...field}
               {...props}
-              id={schema}
               className={cn(className)}
+              id={schema}
             />
           </FormControl>
           {description && (

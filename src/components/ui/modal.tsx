@@ -1,15 +1,14 @@
 'use client';
 
-import {
-  ComponentPropsWithoutRef,
-  ElementRef,
-  HTMLAttributes,
-  forwardRef,
-} from 'react';
-
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { type VariantProps, cva } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { X } from 'lucide-react';
+import {
+  type ComponentPropsWithoutRef,
+  type ElementRef,
+  forwardRef,
+  type HTMLAttributes,
+} from 'react';
 
 import { cn } from '@/lib/utils';
 
@@ -27,7 +26,7 @@ const ModalOverlay = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     className={cn(
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 bg-background/80 fixed inset-0 z-50 backdrop-blur-xs',
+      'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-background/80 backdrop-blur-xs data-[state=closed]:animate-out data-[state=open]:animate-in',
       className
     )}
     {...props}
@@ -38,18 +37,18 @@ ModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const ModalVariants = cva(
   cn(
-    'fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500 overflow-y-auto',
-    'md:left-[50%] md:top-[50%] grid md:w-full md:max-w-lg md:translate-x-[-50%] md:translate-y-[-50%] md:border md:duration-200 md:data-[state=open]:animate-in md:data-[state=closed]:animate-out md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-left-1/2 md:data-[state=closed]:slide-out-to-top-[48%] md:data-[state=open]:slide-in-from-left-1/2 md:data-[state=open]:slide-in-from-top-[48%] md:rounded-xl'
+    'fixed z-50 gap-4 overflow-y-auto bg-background p-6 shadow-lg transition ease-in-out data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:duration-300 data-[state=open]:duration-500',
+    'md:data-[state=closed]:fade-out-0 md:data-[state=open]:fade-in-0 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95 md:data-[state=closed]:slide-out-to-left-1/2 md:data-[state=closed]:slide-out-to-top-[48%] md:data-[state=open]:slide-in-from-left-1/2 md:data-[state=open]:slide-in-from-top-[48%] grid md:top-[50%] md:left-[50%] md:w-full md:max-w-lg md:translate-x-[-50%] md:translate-y-[-50%] md:rounded-xl md:border md:duration-200 md:data-[state=closed]:animate-out md:data-[state=open]:animate-in'
   ),
   {
     variants: {
       side: {
-        top: 'inset-x-0 top-0 border-b rounded-b-xl max-h-[97%] md:h-fit data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top',
+        top: 'data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 max-h-[97%] rounded-b-xl border-b md:h-fit',
         bottom:
-          'inset-x-0 bottom-0 border-t md:h-fit max-h-[97%] rounded-t-xl data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-        left: 'inset-y-0 left-0 h-full md:h-fit w-3/4 border-r rounded-r-xl data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm',
+          'data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 max-h-[97%] rounded-t-xl border-t md:h-fit',
+        left: 'data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 rounded-r-xl border-r sm:max-w-sm md:h-fit',
         right:
-          'inset-y-0 right-0 h-full md:h-fit w-3/4 border-l rounded-l-xl data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
+          'data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 rounded-l-xl border-l sm:max-w-sm md:h-fit',
       },
     },
     defaultVariants: {
@@ -69,12 +68,12 @@ const ModalContent = forwardRef<
   <ModalPortal>
     <ModalOverlay />
     <DialogPrimitive.Content
-      ref={ref}
       className={cn(ModalVariants({ side }), className)}
+      ref={ref}
       {...props}
     >
       {children}
-      <ModalClose className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
+      <ModalClose className="absolute top-4 right-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
         <X className="h-4 w-4" />
         <span className="sr-only">Close</span>
       </ModalClose>
@@ -113,8 +112,8 @@ const ModalTitle = forwardRef<
   ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
+    className={cn('font-semibold text-foreground text-lg', className)}
     ref={ref}
-    className={cn('text-foreground text-lg font-semibold', className)}
     {...props}
   />
 ));
@@ -125,8 +124,8 @@ const ModalDescription = forwardRef<
   ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
-    ref={ref}
     className={cn('text-muted-foreground text-sm', className)}
+    ref={ref}
     {...props}
   />
 ));

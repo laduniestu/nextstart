@@ -6,7 +6,7 @@ import { AFTER_LOGIN_URL } from '@/config';
 export const authClient = createAuthClient({
   plugins: [adminClient()],
   fetchOptions: {
-    onError: async (context) => {
+    onError: (context) => {
       const { response } = context;
       if (response.status === 429) {
         const retryAfter = response.headers.get('X-Retry-After');

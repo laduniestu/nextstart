@@ -1,9 +1,9 @@
 import { getSessionCookie } from 'better-auth/cookies';
-import { NextRequest, NextResponse } from 'next/server';
+import { type NextRequest, NextResponse } from 'next/server';
 
 import { AFTER_LOGIN_URL, isAuthPath, isPublicPath } from '@/config';
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isLoggedIn = getSessionCookie(req);
 

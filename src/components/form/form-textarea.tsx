@@ -1,6 +1,6 @@
 'use client';
 
-import { TextareaHTMLAttributes } from 'react';
+import type { TextareaHTMLAttributes } from 'react';
 
 import { useFormContext } from 'react-hook-form';
 
@@ -40,9 +40,9 @@ export function FormTextarea<S>({
             <Textarea
               {...field}
               {...props}
-              id={schema}
-              value={field.value || ''} // Handle undefined/null values
               className={cn(className)}
+              id={schema} // Handle undefined/null values
+              value={field.value || ''}
             />
           </FormControl>
           {description && (

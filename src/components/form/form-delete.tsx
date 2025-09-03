@@ -29,7 +29,7 @@ export function FormDelete({
   isPending: boolean;
 }) {
   return (
-    <Modal open={isOpen} onOpenChange={setIsOpen}>
+    <Modal onOpenChange={setIsOpen} open={isOpen}>
       <ModalContent>
         <ModalHeader>
           <ModalTitle>{title}</ModalTitle>
@@ -37,10 +37,10 @@ export function FormDelete({
         </ModalHeader>
         <ModalFooter>
           <Button
-            variant="secondary"
             disabled={isPending}
-            type="button"
             onClick={() => setIsOpen(false)}
+            type="button"
+            variant="secondary"
           >
             Cancel
           </Button>

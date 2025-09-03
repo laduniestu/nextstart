@@ -1,8 +1,7 @@
+import type { VariantProps } from 'class-variance-authority';
 import { Loader2Icon } from 'lucide-react';
-
-import { Button, buttonVariants } from '@/components/ui/button';
+import { Button, type buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { VariantProps } from 'class-variance-authority';
 
 export function FormButton({
   children,

@@ -6,7 +6,7 @@
  */
 
 // Types for S3 configuration
-export interface S3Config {
+export type S3Config = {
   endpoint: string;
   region: string;
   bucket: string;
@@ -14,16 +14,16 @@ export interface S3Config {
   secretKey: string;
   forcePathStyle?: boolean; // Needed for some S3-compatible providers
   publicUrl?: string; // Optional custom public URL for the bucket
-}
+};
 
 // For client-to-server file upload
-export interface FileUploadRequest {
+export type FileUploadRequest = {
   fileData: string; // Base64 encoded file data
   fileName: string;
   fileType: string;
   folder?: string;
   customFileName?: string;
-}
+};
 
 // Supported file types
 export const ALLOWED_FILE_TYPES = [
@@ -37,12 +37,12 @@ export const ALLOWED_FILE_TYPES = [
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 // Options for file uploads
-export interface UploadOptions {
+export type UploadOptions = {
   folder?: string; // Optional folder path within bucket
   fileName?: string; // Optional custom filename
   contentType?: string; // Optional content type override
   maxSize?: number; // Optional file size limit override
-}
+};
 
 // Browser-compatible UUID generator
 export function generateUUID(): string {
@@ -53,8 +53,8 @@ export function generateUUID(): string {
 
   // Fallback implementation for older browsers
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    const r = Math.floor(Math.random() * 16);
+    const v = c === 'x' ? r : (r % 4) + 8;
     return v.toString(16);
   });
 }
@@ -62,7 +62,7 @@ export function generateUUID(): string {
 /**
  * Validates a file before upload (can be used in client code)
  */
-export async function validateFile(
+export function validateFile(
   file: File,
   options?: { maxSize?: number; allowedTypes?: string[] }
 ) {

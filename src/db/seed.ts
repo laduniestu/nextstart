@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
-import { seedUser } from '@/db/seed/user';
 import { pg } from '@/db';
+import { seedUser } from '@/db/seed/user';
 
 async function main() {
   console.info('⏳ Running seed...');

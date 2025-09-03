@@ -1,4 +1,3 @@
-import { APP_NAME, APP_URL } from '@/config';
 import {
   Body,
   Button,
@@ -13,6 +12,7 @@ import {
   Section,
   Text,
 } from 'jsx-email';
+import { APP_NAME, APP_URL } from '@/config';
 
 const logo = {
   borderRadius: 21,
@@ -85,22 +85,23 @@ export const EmailVerificationTemplate = ({
     <Body style={main}>
       <Container style={container}>
         <Img
-          src={`${appUrl}/logo.png`}
-          width="42"
-          height="42"
           alt={appName}
+          height="42"
+          src={`${appUrl}/logo.png`}
           style={logo}
+          width="42"
         />
         <Heading style={heading}>Email Verification for {appName}</Heading>
+        <Text style={paragraph}>Hi {name},</Text>
         <Section style={buttonContainer}>
           <Button
-            width={152}
-            height={40}
             backgroundColor="#5e6ad2"
             borderRadius={3}
-            textColor="#fff"
             fontSize={15}
+            height={40}
             href={url}
+            textColor="#fff"
+            width={152}
           >
             Verify Email
           </Button>

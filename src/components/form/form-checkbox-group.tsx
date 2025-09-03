@@ -41,19 +41,19 @@ export function FormCheckboxGroup<S>({
           <div className="flex gap-3 pt-2">
             {options.map((option) => (
               <label
-                key={String(option.value)}
                 className={`flex flex-1 cursor-pointer flex-row items-start rounded-md border p-4 ${
                   field.value === option.value
-                    ? 'bg-primary/5 border-primary'
+                    ? 'border-primary bg-primary/5'
                     : ''
                 }`}
+                key={String(option.value)}
               >
                 <input
-                  type="radio"
-                  className="sr-only"
                   checked={field.value === option.value}
-                  onChange={() => field.onChange(option.value)}
+                  className="sr-only"
                   disabled={disabled}
+                  onChange={() => field.onChange(option.value)}
+                  type="radio"
                 />
                 <div className="flex h-5 items-center">
                   <Checkbox checked={field.value === option.value} disabled />

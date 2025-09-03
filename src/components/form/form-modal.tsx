@@ -1,6 +1,11 @@
 'use client';
 
-import { MutableRefObject, ReactNode, createContext, useRef } from 'react';
+import {
+  createContext,
+  type MutableRefObject,
+  type ReactNode,
+  useRef,
+} from 'react';
 
 import {
   Modal,
@@ -19,7 +24,9 @@ type ToggleContextType = {
 
 export const ToggleContext = createContext<ToggleContextType>({
   isOpen: false,
-  setIsOpen: () => {},
+  setIsOpen: () => {
+    // noop
+  },
   preventCloseRef: { current: false },
 });
 
@@ -47,11 +54,11 @@ export function FormModal({
       }}
     >
       <Modal
-        open={isOpen}
         onOpenChange={(value) => {
           if (preventCloseRef.current) return;
           setIsOpen(value);
         }}
+        open={isOpen}
       >
         <ModalContent>
           <ModalHeader>

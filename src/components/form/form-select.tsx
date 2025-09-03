@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { useFormContext } from 'react-hook-form';
 
@@ -56,15 +56,15 @@ export function FormSelect<S>({
         <FormItem className="space-y-0.5">
           <FormLabel htmlFor={schema}>{title}</FormLabel>
           <Select
-            value={valueTransform(field.value)}
+            disabled={disabled}
             onValueChange={(value) => {
               field.onChange(value);
               onValueChange?.(value);
             }}
-            disabled={disabled}
+            value={valueTransform(field.value)}
           >
             <FormControl>
-              <SelectTrigger id={schema} className={className}>
+              <SelectTrigger className={className} id={schema}>
                 <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>

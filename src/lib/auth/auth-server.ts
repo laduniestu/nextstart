@@ -2,11 +2,10 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { admin } from 'better-auth/plugins';
-
+import { render } from 'jsx-email';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { sendEmail } from '@/lib/mail';
-import { render } from 'jsx-email';
 import { EmailVerificationTemplate } from '../mail/template/email-verification';
 
 export const auth = betterAuth({
@@ -31,6 +30,7 @@ export const auth = betterAuth({
     enabled: true,
     window: 10, // time window in seconds
     max: 20, // max requests in the window
+    // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     onLimit: (ctx: any) => {
       console.log('Rate limit triggered:', ctx);
     },

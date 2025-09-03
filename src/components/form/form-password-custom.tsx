@@ -1,6 +1,6 @@
 'use client';
 
-import { InputHTMLAttributes } from 'react';
+import type { InputHTMLAttributes } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import {
@@ -29,9 +29,9 @@ export function FormPasswordCustom<S>({ title, schema }: Props<S>) {
           <FormLabel htmlFor={schema}>{title}</FormLabel>
           <FormControl>
             <PasswordInput
-              value={field.value}
-              onChange={field.onChange}
               id={schema}
+              onChange={field.onChange}
+              value={field.value}
             />
           </FormControl>
           <FormMessage />

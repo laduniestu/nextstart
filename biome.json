@@ -19,7 +19,23 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noUnknownAtRules": "off"
+        "noUnknownAtRules": "off",
+        "noConsole": "off"
+      },
+      "performance": {
+        "useTopLevelRegex": "off",
+        "noNamespaceImport": "off",
+        "noBarrelFile": "off"
+      },
+      "style": {
+        "noMagicNumbers": "off",
+        "useBlockStatements": "off"
+      },
+      "correctness": {
+        "noNestedComponentDefinitions": "off"
+      },
+      "nursery": {
+        "noShadow": "off"
       }
     },
     "domains": {

@@ -4,19 +4,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import z from 'zod/mini';
-
-import { LOGIN_URL } from '@/config';
+import type z from 'zod/mini';
+import { RegisterSchema, type RegisterType } from '@/app/auth/register/type';
 import { FormButton } from '@/components/form/form-button';
 import { FormError } from '@/components/form/form-error';
 import { FormInput } from '@/components/form/form-input';
 import { FormPasswordCustom } from '@/components/form/form-password-custom';
-import { Form } from '@/components/ui/form';
-import { RegisterSchema, RegisterType } from '@/app/(auth)/register/type';
-import { authClient } from '@/lib/auth/auth-client';
 import { FormSuccess } from '@/components/form/form-success';
+import { Form } from '@/components/ui/form';
+import { LOGIN_URL } from '@/config';
+import { authClient } from '@/lib/auth/auth-client';
 
-export default function RegisterPage() {
+export default function RegisterForm() {
   const [isPending, startTransition] = useTransition();
   const [errorForm, setErrorForm] = useState<{
     message: string;
@@ -36,13 +35,13 @@ export default function RegisterPage() {
   });
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     startTransition(async () => {
-      const { data, error } = await authClient.signUp.email(values, {
+      await authClient.signUp.email(values, {
         onError(ctx) {
           setErrorForm({
             message: ctx.error.message,
           });
         },
-        onSuccess(ctx) {
+        onSuccess() {
           setSuccessForm({
             code: "You're registered!",
             message: 'Please check your email to verify your account.',
@@ -50,33 +49,32 @@ export default function RegisterPage() {
           form.reset();
         },
       });
-      console.log(data, error);
     });
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <h1 className="text-center text-3xl font-bold">Register</h1>
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <h1 className="text-center font-bold text-3xl">Register</h1>
         <FormError error={errorForm ?? undefined} />
         <FormSuccess success={successForm ?? undefined} />
         <FormInput<RegisterType>
-          title="Name"
-          schema="name"
           placeholder="John Doe"
+          schema="name"
+          title="Name"
         />
         <FormInput<RegisterType>
-          title="Email"
-          schema="email"
           placeholder="example@email.com"
+          schema="email"
+          title="Email"
         />
-        <FormPasswordCustom<RegisterType> title="Password" schema="password" />
+        <FormPasswordCustom<RegisterType> schema="password" title="Password" />
         <FormButton className="w-full" isLoading={isPending}>
           Register
         </FormButton>
         <div className="flex justify-center">
           <Link
-            href={LOGIN_URL}
             className="text-sm underline-offset-4 hover:underline"
+            href={LOGIN_URL}
           >
             Already have an account?
           </Link>

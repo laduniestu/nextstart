@@ -27,7 +27,7 @@ export const sendEmail = async (payload: {
 
     if (response?.success) return true;
     return false;
-  } catch (error: any) {
+  } catch (error) {
     console.error('Error sending email:', error);
     return false;
   }

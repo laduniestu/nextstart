@@ -1,16 +1,12 @@
 import Link from 'next/link';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-export default async function AuthLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
-          <Link href="/" className="flex items-center gap-2 font-medium">
+          <Link className="flex items-center gap-2 font-medium" href="/">
             <div className="flex h-6 w-6 items-center justify-center overflow-hidden bg-foreground text-background">
               <h1>A</h1>
               {/* <Image
@@ -28,7 +24,7 @@ export default async function AuthLayout({
           <div className="w-full max-w-xs">{children}</div>
         </div>
       </div>
-      <div className="bg-muted relative hidden lg:flex items-center justify-center min-h-full">
+      <div className="relative hidden min-h-full items-center justify-center bg-muted lg:flex">
         <div className="">App Logo</div>
         {/* <Image
           fill={true}

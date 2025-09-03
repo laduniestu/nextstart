@@ -2,22 +2,21 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
-import z from 'zod/mini';
-
+import { toast } from 'sonner';
+import type z from 'zod/mini';
+import { LoginSchema, type LoginType } from '@/app/auth/login/type';
 import { FormButton } from '@/components/form/form-button';
 import { FormError } from '@/components/form/form-error';
 import { FormInput } from '@/components/form/form-input';
 import { FormPassword } from '@/components/form/form-password';
 import { Form } from '@/components/ui/form';
-import { LoginSchema, LoginType } from '@/app/(auth)/login/type';
-import { toast } from 'sonner';
-import { authClient } from '@/lib/auth/auth-client';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { AFTER_LOGIN_URL } from '@/config';
+import { authClient } from '@/lib/auth/auth-client';
 
-export default function LoginPage() {
+export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
@@ -31,7 +30,7 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     startTransition(async () => {
       await authClient.signIn.email(values, {
         onError(ctx) {
@@ -46,18 +45,18 @@ export default function LoginPage() {
   };
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <h1 className="text-center text-3xl font-bold">Login</h1>
+      <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+        <h1 className="text-center font-bold text-3xl">Login</h1>
         <FormError error={errorForm ?? undefined} />
         <FormInput<LoginType>
-          title="Email"
-          schema="email"
           placeholder="example@email.com"
+          schema="email"
+          title="Email"
         />
-        <FormPassword<LoginType> title="Password" schema="password" />
+        <FormPassword<LoginType> schema="password" title="Password" />
         <Link
+          className="-mt-4 flex text-sm underline-offset-4 hover:underline"
           href="/forgot-password"
-          className="text-sm underline-offset-4 hover:underline -mt-4 flex"
         >
           Forgot your password?
         </Link>
@@ -66,8 +65,8 @@ export default function LoginPage() {
         </FormButton>
         <div className="flex justify-center">
           <Link
-            href="/register"
             className="text-sm underline-offset-4 hover:underline"
+            href="/register"
           >
             Do not have an account?
           </Link>
