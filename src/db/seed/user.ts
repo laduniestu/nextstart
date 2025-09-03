@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth';
+import { auth } from '@/lib/auth/auth-server';
 
 export async function seedUser(input: { count: number }) {
   try {

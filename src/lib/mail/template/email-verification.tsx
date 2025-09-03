@@ -1,4 +1,4 @@
-import { APP_NAME, APP_URL } from "@/config";
+import { APP_NAME, APP_URL } from '@/config';
 import {
   Body,
   Button,
@@ -12,7 +12,7 @@ import {
   Preview,
   Section,
   Text,
-} from "jsx-email";
+} from 'jsx-email';
 
 const logo = {
   borderRadius: 21,
@@ -21,52 +21,52 @@ const logo = {
 };
 
 const main = {
-  backgroundColor: "#ffffff",
+  backgroundColor: '#ffffff',
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
 
 const container = {
-  margin: "0 auto",
-  padding: "20px 0 48px",
-  width: "560px",
+  margin: '0 auto',
+  padding: '20px 0 48px',
+  width: '560px',
 };
 
 const heading = {
-  fontSize: "24px",
-  letterSpacing: "-0.5px",
-  lineHeight: "1.3",
-  fontWeight: "400",
-  color: "#484848",
-  padding: "17px 0 0",
+  fontSize: '24px',
+  letterSpacing: '-0.5px',
+  lineHeight: '1.3',
+  fontWeight: '400',
+  color: '#484848',
+  padding: '17px 0 0',
 };
 
 const paragraph = {
-  margin: "0 0 15px",
-  fontSize: "15px",
-  lineHeight: "1.4",
-  color: "#3c4149",
+  margin: '0 0 15px',
+  fontSize: '15px',
+  lineHeight: '1.4',
+  color: '#3c4149',
 };
 
 const buttonContainer = {
-  padding: "27px 0 27px",
-  margin: "0 auto",
+  padding: '27px 0 27px',
+  margin: '0 auto',
 };
 
 const reportLink = {
-  fontSize: "14px",
-  color: "#b4becc",
+  fontSize: '14px',
+  color: '#b4becc',
 };
 
 const hr = {
-  borderColor: "#dfe1e4",
-  margin: "42px 0 26px",
+  borderColor: '#dfe1e4',
+  margin: '42px 0 26px',
 };
 
 const code = {
-  padding: "1px 4px",
-  backgroundColor: "#dfe1e4",
-  color: "#3c4149",
+  padding: '1px 4px',
+  backgroundColor: '#dfe1e4',
+  color: '#3c4149',
 };
 
 const appName = APP_NAME;

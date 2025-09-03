@@ -1,17 +1,17 @@
-import { betterAuth } from "better-auth";
-import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins";
+import { betterAuth } from 'better-auth';
+import { drizzleAdapter } from 'better-auth/adapters/drizzle';
+import { nextCookies } from 'better-auth/next-js';
+import { admin } from 'better-auth/plugins';
 
-import { db } from "@/db";
-import * as schema from "@/db/schema";
-import { sendEmail } from "@/lib/mail";
-import { render } from "jsx-email";
-import { EmailVerificationTemplate } from "./mail/template/email-verification";
+import { db } from '@/db';
+import * as schema from '@/db/schema';
+import { sendEmail } from '@/lib/mail';
+import { render } from 'jsx-email';
+import { EmailVerificationTemplate } from '../mail/template/email-verification';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
-    provider: "pg",
+    provider: 'pg',
     schema: {
       ...schema,
     },
@@ -32,7 +32,7 @@ export const auth = betterAuth({
     window: 10, // time window in seconds
     max: 20, // max requests in the window
     onLimit: (ctx: any) => {
-      console.log("Rate limit triggered:", ctx);
+      console.log('Rate limit triggered:', ctx);
     },
   },
   // account: {
@@ -52,7 +52,7 @@ export const auth = betterAuth({
       );
       await sendEmail({
         to: user.email,
-        subject: "Verify your email address",
+        subject: 'Verify your email address',
         body,
       });
     },
@@ -72,8 +72,8 @@ export const auth = betterAuth({
   // },
   plugins: [
     admin({
-      defaultRole: "user",
-      adminRoles: ["admin"],
+      defaultRole: 'user',
+      adminRoles: ['admin'],
     }),
     nextCookies(),
   ],

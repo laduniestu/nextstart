@@ -1,6 +1,6 @@
-import Plunk from "@plunk/node";
+import Plunk from '@plunk/node';
 
-import { env } from "@/env/server";
+import { env } from '@/env/server';
 
 let plunk: Plunk | null = null;
 
@@ -23,12 +23,12 @@ export const sendEmail = async (payload: {
       body: payload.body,
     });
 
-    console.log("Email sent successfully:", response);
+    console.log('Email sent successfully:', response);
 
     if (response?.success) return true;
     return false;
   } catch (error: any) {
-    console.error("Error sending email:", error);
+    console.error('Error sending email:', error);
     return false;
   }
 };

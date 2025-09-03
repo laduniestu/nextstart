@@ -13,13 +13,12 @@ import { FormInput } from '@/components/form/form-input';
 import { FormPasswordCustom } from '@/components/form/form-password-custom';
 import { Form } from '@/components/ui/form';
 import { RegisterSchema, RegisterType } from '@/app/(auth)/register/type';
-import { authClient } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth/auth-client';
 import { FormSuccess } from '@/components/form/form-success';
 
 export default function RegisterPage() {
   const [isPending, startTransition] = useTransition();
   const [errorForm, setErrorForm] = useState<{
-    code: string | number;
     message: string;
   } | null>(null);
   const [successForm, setSuccessForm] = useState<{
@@ -40,7 +39,6 @@ export default function RegisterPage() {
       const { data, error } = await authClient.signUp.email(values, {
         onError(ctx) {
           setErrorForm({
-            code: ctx.error.code,
             message: ctx.error.message,
           });
         },

@@ -13,17 +13,16 @@ import { FormPassword } from '@/components/form/form-password';
 import { Form } from '@/components/ui/form';
 import { LoginSchema, LoginType } from '@/app/(auth)/login/type';
 import { toast } from 'sonner';
-import { authClient } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth/auth-client';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { AFTER_LOGIN_URL } from '@/config';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get('callbackUrl');
   const [isPending, startTransition] = useTransition();
-  const [errorForm, setErrorForm] = useState<{
-    code: string | number;
-    message: string;
-  } | null>(null);
+  const [errorForm, setErrorForm] = useState<{ message: string } | null>(null);
   const form = useForm<LoginType>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -36,13 +35,10 @@ export default function LoginPage() {
     startTransition(async () => {
       await authClient.signIn.email(values, {
         onError(ctx) {
-          setErrorForm({
-            code: ctx.error.code,
-            message: ctx.error.message,
-          });
+          setErrorForm({ message: ctx.error.message });
         },
         onSuccess() {
-          router.push(AFTER_LOGIN_URL);
+          router.push(callbackUrl || AFTER_LOGIN_URL);
           toast.success('Login successful! Redirecting to your dashboard.');
         },
       });
