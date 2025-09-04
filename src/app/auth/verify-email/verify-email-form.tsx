@@ -1,7 +1,7 @@
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 'use client';
-import { notFound, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
-import { z } from 'zod';
 import {
   InputOTP,
   InputOTPGroup,
@@ -9,93 +9,103 @@ import {
 } from '@/components/ui/input-otp';
 import { authClient } from '@/lib/auth/auth-client';
 
-export default function VerifyEmailForm() {
+export default function VerifyEmailForm({ email }: { email: string }) {
   const router = useRouter();
+  const [error, setError] = useState('');
+  const [countdown, setCountdown] = useState(60);
+
   const [isPending, startTransition] = useTransition();
-  const [value, setValue] = useState('');
-  const searchParams = useSearchParams();
-  const emailParam = searchParams.get('email');
+  const [otp, setOtp] = useState('');
 
-  const emailSchema = z.email();
-
-  const parseResult = emailSchema.safeParse(emailParam);
-  if (!parseResult.success) {
-    notFound();
-  }
-  const email = parseResult.data;
-
-  // const handleResendVerification = () => {
-  //   startTransition(async () => {
-  //     await authClient.sendVerificationEmail({
-  //       email: email as string,
-  //       callbackURL: '/auth/verify-email',
-  //     });
-  //   });
-  // };
+  const handleResendVerification = () => {
+    startTransition(async () => {
+      await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: 'email-verification',
+      });
+    });
+  };
   const handleVerifyEmail = () => {
+    setError('');
     startTransition(async () => {
       await authClient.emailOtp.verifyEmail(
-        {
-          email: email as string,
-          otp: value,
-        },
+        { email, otp },
         {
           onSuccess: () => {
             router.push('/app');
           },
           onError: (error) => {
-            console.log(error.error.message);
+            setError(error.error.message);
           },
         }
       );
-      setValue('');
+      setOtp('');
     });
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    if (value.length === 6 && !isPending) {
+    if (otp.length === 6 && !isPending) {
       handleVerifyEmail();
     }
-  }, [value, isPending]);
+  }, [otp, isPending]);
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
   return (
-    <div className="flex flex-col items-center text-center">
-      <h1 className="text-center font-bold text-3xl">Verify Your Email</h1>
-      <p className="mt-10">You're almost there! We sent an email to</p>
-      <b className="mb-10">{email}</b>
-      {isPending ? (
-        <p>Verifying...</p>
-      ) : (
-        <InputOTP
-          maxLength={6}
-          onChange={(value) => setValue(value)}
-          value={value}
-        >
-          <InputOTPGroup>
-            <InputOTPSlot index={0} />
-          </InputOTPGroup>
-          <InputOTPGroup>
-            <InputOTPSlot index={1} />
-          </InputOTPGroup>
-          <InputOTPGroup>
-            <InputOTPSlot index={2} />
-          </InputOTPGroup>
-          <InputOTPGroup>
-            <InputOTPSlot index={3} />
-          </InputOTPGroup>
-          <InputOTPGroup>
-            <InputOTPSlot index={4} />
-          </InputOTPGroup>
-          <InputOTPGroup>
-            <InputOTPSlot index={5} />
-          </InputOTPGroup>
-        </InputOTP>
-      )}
-      <p className="mt-8">
+    <div className="flex h-40 w-full flex-col items-center space-y-4">
+      <InputOTP
+        autoFocus
+        disabled={isPending}
+        maxLength={6}
+        onChange={(otp) => setOtp(otp)}
+        value={otp}
+      >
+        <InputOTPGroup>
+          <InputOTPSlot index={0} />
+        </InputOTPGroup>
+        <InputOTPGroup>
+          <InputOTPSlot index={1} />
+        </InputOTPGroup>
+        <InputOTPGroup>
+          <InputOTPSlot index={2} />
+        </InputOTPGroup>
+        <InputOTPGroup>
+          <InputOTPSlot index={3} />
+        </InputOTPGroup>
+        <InputOTPGroup>
+          <InputOTPSlot index={4} />
+        </InputOTPGroup>
+        <InputOTPGroup>
+          <InputOTPSlot index={5} />
+        </InputOTPGroup>
+      </InputOTP>
+      <p className="flex text-center text-destructive">{error}</p>
+      <p className="mt-10">
         If you don't see it, please <b>check your spam folder</b>.
       </p>
-      <p className="mt-8 mb-4">Still cant find the email?</p>
+      <p className="mt-4">
+        Still can't find the email?{' '}
+        {countdown > 0 ? (
+          `Resend in   ${countdown}`
+        ) : (
+          <button
+            className="cursor-pointer text-blue-500 underline-offset-4 hover:underline disabled:cursor-not-allowed disabled:text-gray-400"
+            disabled={countdown > 0}
+            onClick={() => {
+              handleResendVerification();
+              setCountdown(60);
+            }}
+            type="button"
+          >
+            Resend
+          </button>
+        )}
+      </p>
     </div>
   );
 }
