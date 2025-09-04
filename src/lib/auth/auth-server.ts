@@ -1,12 +1,13 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
-import { admin } from 'better-auth/plugins';
+import { admin, emailOTP } from 'better-auth/plugins';
 import { render } from 'jsx-email';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
+import { env } from '@/env/server';
 import { sendEmail } from '@/lib/mail';
-import { EmailVerificationTemplate } from '../mail/template/email-verification';
+import { OtpVerificationTemplate } from '../mail/template/otp-verification';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -29,51 +30,57 @@ export const auth = betterAuth({
   rateLimit: {
     enabled: true,
     window: 10, // time window in seconds
-    max: 20, // max requests in the window
+    max: 1, // max requests in the window
+    customRules: {
+      '/auth/login': {
+        window: 10,
+        max: 3,
+      },
+      '/auth/verify-email': (request) => {
+        // custom function to return rate limit window and max
+        console.log(request);
+        return {
+          window: 10,
+          max: 3,
+        };
+      },
+    },
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     onLimit: (ctx: any) => {
       console.log('Rate limit triggered:', ctx);
     },
   },
-  // account: {
-  //   accountLinking: {
-  //     enabled: true,
-  //   },
-  // },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
     resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
   },
-  emailVerification: {
-    sendVerificationEmail: async ({ user, url }) => {
-      const body = await render(
-        EmailVerificationTemplate({ name: user.name, url })
-      );
-      await sendEmail({
-        to: user.email,
-        subject: 'Verify your email address',
-        body,
-      });
-    },
-    sendOnSignUp: true,
-    autoSignInAfterVerification: true,
-  },
-  // socialProviders: {
-  //   github: {
-  //     clientId: process.env.GITHUB_CLIENT_ID as string,
-  //     clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
-  //   },
-  //   google: {
-  //     prompt: 'select_account',
-  //     clientId: process.env.GOOGLE_CLIENT_ID as string,
-  //     clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-  //   },
-  // },
   plugins: [
     admin({
       defaultRole: 'user',
       adminRoles: ['admin'],
+    }),
+    emailOTP({
+      // biome-ignore lint/suspicious/useAwait: <explanation>
+      async sendVerificationOTP({ email, otp, type }) {
+        if (type === 'email-verification') {
+          if (env.NODE_ENV === 'development') {
+            console.log(`OTP Code : ${otp}`);
+          } else {
+            const body = await render(
+              OtpVerificationTemplate({ name: email, otp })
+            );
+            await sendEmail({
+              to: email,
+              subject: 'OTP Code',
+              body,
+            });
+          }
+        }
+      },
+      otpLength: 6,
+      expiresIn: 60 * 10,
+      sendVerificationOnSignUp: true,
     }),
     nextCookies(),
   ],

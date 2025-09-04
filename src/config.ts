@@ -4,7 +4,7 @@ export const APP_CONFIG: { mode: 'coming-soon' | 'maintenance' | 'live' } = {
   mode: 'live',
 };
 export const DATABASE_PREFIX = 'shadcn';
-export const LOGIN_URL = '/login';
+export const LOGIN_URL = '/auth/login';
 export const AFTER_LOGIN_URL = '/app';
 export const APP_NAME = env.NEXT_PUBLIC_APP_NAME || 'Next Start';
 export const APP_URL = env.NEXT_PUBLIC_APP_URL;
@@ -14,7 +14,12 @@ export const publicPathsConfig = {
   exactPaths: ['/'],
 
   // Exact paths for authentication
-  authPaths: ['/login', '/register', '/forgot-password'],
+  authPaths: [
+    '/auth/login',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/verify-email',
+  ],
 
   // Path prefixes - any path starting with these will be public
   prefixes: ['/docs/', '/api/auth/'],

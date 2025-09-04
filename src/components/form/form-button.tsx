@@ -9,13 +9,13 @@ export function FormButton({
   className,
   ...props
 }: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & { isLoading: boolean }) {
+  VariantProps<typeof buttonVariants> & { isLoading: boolean; type?: string }) {
   return (
     <Button
       disabled={isLoading}
-      type="submit"
+      type={props.type || 'submit'}
       {...props}
-      className={cn('flex justify-center gap-2 px-3', className)}
+      className={cn('flex cursor-pointer justify-center gap-2 px-3', className)}
     >
       {isLoading && <Loader2Icon className="h-4 w-4 animate-spin" />}
       {children}

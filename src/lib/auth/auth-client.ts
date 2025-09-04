@@ -1,10 +1,9 @@
-import { adminClient } from 'better-auth/client/plugins';
+import { adminClient, emailOTPClient } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
 import { AFTER_LOGIN_URL } from '@/config';
 
 export const authClient = createAuthClient({
-  plugins: [adminClient()],
   fetchOptions: {
     onError: (context) => {
       const { response } = context;
@@ -14,6 +13,7 @@ export const authClient = createAuthClient({
       }
     },
   },
+  plugins: [adminClient(), emailOTPClient()],
 });
 
 export const signInWithGithub = async () => {

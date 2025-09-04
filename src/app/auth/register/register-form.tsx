@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import type z from 'zod/mini';
@@ -10,18 +11,14 @@ import { FormButton } from '@/components/form/form-button';
 import { FormError } from '@/components/form/form-error';
 import { FormInput } from '@/components/form/form-input';
 import { FormPasswordCustom } from '@/components/form/form-password-custom';
-import { FormSuccess } from '@/components/form/form-success';
 import { Form } from '@/components/ui/form';
 import { LOGIN_URL } from '@/config';
 import { authClient } from '@/lib/auth/auth-client';
 
 export default function RegisterForm() {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [errorForm, setErrorForm] = useState<{
-    message: string;
-  } | null>(null);
-  const [successForm, setSuccessForm] = useState<{
-    code: string | number;
     message: string;
   } | null>(null);
 
@@ -35,20 +32,22 @@ export default function RegisterForm() {
   });
   const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     startTransition(async () => {
-      await authClient.signUp.email(values, {
-        onError(ctx) {
-          setErrorForm({
-            message: ctx.error.message,
-          });
+      await authClient.signUp.email(
+        {
+          callbackURL: '/auth/verify-email',
+          ...values,
         },
-        onSuccess() {
-          setSuccessForm({
-            code: "You're registered!",
-            message: 'Please check your email to verify your account.',
-          });
-          form.reset();
-        },
-      });
+        {
+          onError(ctx) {
+            setErrorForm({
+              message: ctx.error.message,
+            });
+          },
+          onSuccess() {
+            router.push(`/auth/verify-email?email=${form.getValues('email')}`);
+          },
+        }
+      );
     });
   };
   return (
@@ -56,7 +55,6 @@ export default function RegisterForm() {
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <h1 className="text-center font-bold text-3xl">Register</h1>
         <FormError error={errorForm ?? undefined} />
-        <FormSuccess success={successForm ?? undefined} />
         <FormInput<RegisterType>
           placeholder="John Doe"
           schema="name"

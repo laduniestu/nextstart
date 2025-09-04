@@ -37,7 +37,7 @@ export default function LoginForm() {
           setErrorForm({ message: ctx.error.message });
         },
         onSuccess() {
-          router.push(callbackUrl || AFTER_LOGIN_URL);
+          router.push((callbackUrl || AFTER_LOGIN_URL) as never);
           toast.success('Login successful! Redirecting to your dashboard.');
         },
       });
@@ -56,7 +56,7 @@ export default function LoginForm() {
         <FormPassword<LoginType> schema="password" title="Password" />
         <Link
           className="-mt-4 flex text-sm underline-offset-4 hover:underline"
-          href="/forgot-password"
+          href="/auth/forgot-password"
         >
           Forgot your password?
         </Link>
@@ -66,7 +66,7 @@ export default function LoginForm() {
         <div className="flex justify-center">
           <Link
             className="text-sm underline-offset-4 hover:underline"
-            href="/register"
+            href="/auth/register"
           >
             Do not have an account?
           </Link>

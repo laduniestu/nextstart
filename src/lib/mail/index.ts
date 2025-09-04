@@ -17,6 +17,8 @@ export const sendEmail = async (payload: {
 }) => {
   const plunk = getPlunk();
   try {
+    console.log('sending mail');
+
     const response = await plunk.emails.send({
       to: payload.to,
       subject: payload.subject,

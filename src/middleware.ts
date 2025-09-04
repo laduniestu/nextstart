@@ -1,7 +1,7 @@
 import { getSessionCookie } from 'better-auth/cookies';
 import { type NextRequest, NextResponse } from 'next/server';
 
-import { AFTER_LOGIN_URL, isAuthPath, isPublicPath } from '@/config';
+import { AFTER_LOGIN_URL, isAuthPath, isPublicPath, LOGIN_URL } from '@/config';
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
@@ -22,7 +22,7 @@ export function middleware(req: NextRequest) {
       req.nextUrl.pathname + req.nextUrl.search
     );
     return NextResponse.redirect(
-      new URL(`/login?callbackUrl=${callbackUrl}`, req.url)
+      new URL(`${LOGIN_URL}?callbackUrl=${callbackUrl}`, req.url)
     );
   }
 

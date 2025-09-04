@@ -29,7 +29,7 @@ export default function Home() {
         <div className="flex flex-col items-center gap-4 sm:flex-row">
           <Link
             className="flex h-10 items-center justify-center gap-2 rounded-full border border-transparent border-solid bg-foreground px-4 font-medium text-background text-sm transition-colors hover:bg-[#383838] sm:h-12 sm:w-auto sm:px-5 sm:text-base dark:hover:bg-[#ccc]"
-            href="/login"
+            href="/auth/login"
           >
             <Image
               alt="logomark"
@@ -42,7 +42,7 @@ export default function Home() {
           </Link>
           <Link
             className="flex h-10 w-full items-center justify-center rounded-full border border-black/[.08] border-solid px-4 font-medium text-sm transition-colors hover:border-transparent hover:bg-[#f2f2f2] sm:h-12 sm:w-auto sm:px-5 sm:text-base md:w-[158px] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
-            href="/register"
+            href="/auth/register"
           >
             Register
           </Link>
