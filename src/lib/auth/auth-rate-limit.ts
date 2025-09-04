@@ -8,15 +8,17 @@ export const rateLimitConfig = {
       window: 60,
       max: 10,
     },
-    '/email-otp/verify-email': (request: any) => {
-      console.log(request);
+    '/email-otp/verify-email': () => {
       return {
-        window: 60 * 60,
-        max: 10,
+        window: 60,
+        max: 3,
       };
     },
-  },
-  onLimit: (ctx: any) => {
-    console.log('Rate limit triggered:', ctx);
+    '/email-otp/send-verification-otp': () => {
+      return {
+        window: 60 * 5,
+        max: 2,
+      };
+    },
   },
 };

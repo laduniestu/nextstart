@@ -30,6 +30,7 @@ export const authPlugins = [
     otpLength: 6,
     expiresIn: 60 * 10, // 10 minutes
     sendVerificationOnSignUp: true,
+    disableSignUp: true,
   }),
   nextCookies(),
 ];
