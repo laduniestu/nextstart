@@ -6,8 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import type z from 'zod/mini';
-import { LoginSchema, type LoginType } from '@/app/auth/login/type';
+import z from 'zod';
 import { FormButton } from '@/components/form/form-button';
 import { FormCheckbox } from '@/components/form/form-checkbox';
 import { FormError } from '@/components/form/form-error';
@@ -17,6 +16,13 @@ import { FormSuccess } from '@/components/form/form-success';
 import { Form } from '@/components/ui/form';
 import { AFTER_LOGIN_URL } from '@/config';
 import { authClient } from '@/lib/auth/auth-client';
+
+const LoginSchema = z.object({
+  email: z.email({ message: 'Invalid email address' }),
+  password: z.string().min(1, { message: 'Password is required' }),
+  rememberMe: z.boolean().optional(),
+});
+type LoginType = z.infer<typeof LoginSchema>;
 
 export default function LoginForm() {
   const router = useRouter();

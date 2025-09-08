@@ -1,4 +1,5 @@
 import { boolean, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
+import type { auth } from '@/lib/auth/auth-server';
 
 const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -21,3 +22,5 @@ const user = pgTable('user', {
 });
 
 export default user;
+
+export type UserType = typeof auth.$Infer.Session;
