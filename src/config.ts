@@ -22,6 +22,7 @@ export const publicPathsConfig = {
     '/auth/register',
     '/auth/forgot-password',
     '/auth/verify-email',
+    '/auth/reset-password',
   ],
 
   // Path prefixes - any path starting with these will be public

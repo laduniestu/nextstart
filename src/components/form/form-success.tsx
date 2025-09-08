@@ -1,19 +1,21 @@
-import { CheckCircle } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { CheckCircle2 } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-export type FormSuccessProps = {
+type FormSuccessProps = {
   success?: {
-    code: string | number;
     message: string;
   };
+  icon?: ReactNode;
 };
-export const FormSuccess = ({ success }: FormSuccessProps) => {
+export const FormSuccess = ({ success, icon }: FormSuccessProps) => {
   if (!success) return null;
   return (
-    <Alert className="bg-emerald-500/20" variant="default">
-      <CheckCircle />
-      <AlertTitle>{success.code}</AlertTitle>
-      <AlertDescription>{success.message}</AlertDescription>
+    <Alert className="text-emerald-400" variant="default">
+      {icon ?? <CheckCircle2 />}
+      <AlertDescription className="text-emerald-400">
+        {success.message}
+      </AlertDescription>
     </Alert>
   );
 };

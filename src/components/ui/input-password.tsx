@@ -70,7 +70,7 @@ export default function PasswordInput({
             className="pe-9"
             id={inputId}
             onChange={onChange}
-            placeholder="Password"
+            placeholder="********"
             type={isVisible ? 'text' : 'password'}
             value={value}
           />

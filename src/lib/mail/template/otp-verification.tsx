@@ -123,7 +123,7 @@ export const OtpVerificationTemplate = ({
     <Body style={main}>
       <Container style={container}>
         <Img
-          alt="Plaid"
+          alt={appName}
           height="88"
           src={`${appUrl}/logo.png`}
           style={logo}
