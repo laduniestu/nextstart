@@ -46,6 +46,8 @@ export default function ForgotPasswordForm() {
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
         <FormError error={errorForm ?? undefined} />
         <FormInput<ForgotPasswordType>
+          autoComplete="email"
+          autoFocus
           placeholder="example@email.com"
           schema="email"
           title="Email"

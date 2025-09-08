@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import z from 'zod';
+import FormSkeleton from '@/components/form/form-skeleton';
 import ResetPasswordForm from './reset-password-form';
 
 export default async function ResetPasswordPage(
@@ -23,7 +24,7 @@ export default async function ResetPasswordPage(
         Enter your new password below. Make sure it's different from your old
         password.
       </p>
-      <Suspense>
+      <Suspense fallback={<FormSkeleton row={2} />}>
         <ResetPasswordForm token={parseResult.data} />
       </Suspense>
       <div className="flex gap-2">

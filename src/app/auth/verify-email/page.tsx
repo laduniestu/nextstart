@@ -16,10 +16,12 @@ export default async function VerifyEmailPage(
     notFound();
   }
   return (
-    <div className="flex flex-col items-center text-center">
+    <div className="flex flex-col items-center gap-8 text-center">
       <h1 className="text-center font-bold text-3xl">Verify Your Email</h1>
-      <p className="mt-10">You're almost there! We sent an email to</p>
-      <b className="mb-10">{email}</b>
+      <div className="flex flex-col items-center justify-center">
+        <p>You're almost there! We sent an email to</p>
+        <b>{email}</b>
+      </div>
       <Suspense
         fallback={
           <div className="flex h-40 w-full items-center justify-center">

@@ -1,7 +1,6 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
@@ -12,7 +11,6 @@ import { FormError } from '@/components/form/form-error';
 import { FormInput } from '@/components/form/form-input';
 import { FormPasswordCustom } from '@/components/form/form-password-custom';
 import { Form } from '@/components/ui/form';
-import { LOGIN_URL } from '@/config';
 import { authClient } from '@/lib/auth/auth-client';
 
 export default function RegisterForm() {
@@ -53,7 +51,6 @@ export default function RegisterForm() {
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <h1 className="text-center font-bold text-3xl">Register</h1>
         <FormError error={errorForm ?? undefined} />
         <FormInput<RegisterType>
           placeholder="John Doe"
@@ -69,14 +66,6 @@ export default function RegisterForm() {
         <FormButton className="w-full" isLoading={isPending}>
           Register
         </FormButton>
-        <div className="flex justify-center">
-          <Link
-            className="text-sm underline-offset-4 hover:underline"
-            href={LOGIN_URL}
-          >
-            Already have an account?
-          </Link>
-        </div>
       </form>
     </Form>
   );

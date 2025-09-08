@@ -76,10 +76,11 @@ export default function LoginForm() {
   return (
     <Form {...form}>
       <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-        <h1 className="text-center font-bold text-3xl">Login</h1>
         <FormError error={errorForm ?? undefined} />
         <FormSuccess success={successForm ?? undefined} />
         <FormInput<LoginType>
+          autoComplete="email"
+          autoFocus
           placeholder="example@email.com"
           schema="email"
           title="Email"
@@ -89,6 +90,7 @@ export default function LoginForm() {
             <Link
               className="flex text-sm underline underline-offset-2"
               href="/auth/forgot-password"
+              tabIndex={-1}
             >
               Forgot your password?
             </Link>
@@ -100,14 +102,6 @@ export default function LoginForm() {
         <FormButton className="w-full" isLoading={isPending}>
           Login
         </FormButton>
-        <div className="flex justify-center">
-          <Link
-            className="text-sm underline-offset-4 hover:underline"
-            href="/auth/register"
-          >
-            Do not have an account?
-          </Link>
-        </div>
       </form>
     </Form>
   );

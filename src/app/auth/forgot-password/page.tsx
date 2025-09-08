@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
+import FormSkeleton from '@/components/form/form-skeleton';
 import ForgotPasswordForm from './forgot-password-form';
 
 export default function ForgotPasswordPage() {
@@ -10,7 +11,7 @@ export default function ForgotPasswordPage() {
         Enter your email address and we'll send you a link to reset your
         password.
       </p>
-      <Suspense>
+      <Suspense fallback={<FormSkeleton />}>
         <ForgotPasswordForm />
       </Suspense>
       <div className="flex gap-2">
