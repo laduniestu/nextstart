@@ -61,16 +61,13 @@ export default function VerifyEmailForm({ email }: { email: string }) {
           },
           onError: (ctx) => {
             const { response } = ctx;
-            console.log(response.body);
             if (response.status === 429) {
               const retryAfter = response.headers.get('X-Retry-After');
               setRateLimitVerify(Number(retryAfter));
               return;
             }
             if (ctx.error.code === 'TOO_MANY_ATTEMPTS') {
-              setError(
-                'You have exceeded the maximum number of attempts. Please try again later.'
-              );
+              router.replace('/auth/login?status=OTP_TOO_MANY_ATTEMPTS');
             } else {
               setError(ctx.error.message);
             }

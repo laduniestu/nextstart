@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/useTemplate: <explanation> */
 import { env } from './env/client';
 
 export const APP_CONFIG: { mode: 'coming-soon' | 'maintenance' | 'live' } = {
@@ -8,6 +9,8 @@ export const LOGIN_URL = '/auth/login';
 export const AFTER_LOGIN_URL = '/app';
 export const APP_NAME = env.NEXT_PUBLIC_APP_NAME || 'Next Start';
 export const APP_URL = env.NEXT_PUBLIC_APP_URL;
+export const APP_EMAIL =
+  'no-reply@' + (APP_URL?.split('://')[1] || 'example.com');
 
 export const publicPathsConfig = {
   // Exact paths that should be publicly accessible

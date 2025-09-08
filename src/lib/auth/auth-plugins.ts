@@ -1,9 +1,10 @@
 import { nextCookies } from 'better-auth/next-js';
 import { admin, emailOTP } from 'better-auth/plugins';
 import { render } from 'jsx-email';
+import { APP_NAME } from '@/config';
 import { env } from '@/env/server';
 import { sendEmail } from '@/lib/mail';
-import { OtpVerificationTemplate } from '../mail/template/otp-verification';
+import { OtpVerificationTemplate } from '@/lib/mail/template/otp-verification';
 
 export const authPlugins = [
   admin({
@@ -21,16 +22,13 @@ export const authPlugins = [
           );
           await sendEmail({
             to: email,
-            subject: 'OTP Code',
+            subject: `OTP Code for ${APP_NAME}`,
             body,
           });
         }
       }
     },
-    otpLength: 6,
-    expiresIn: 60 * 10, // 10 minutes
-    sendVerificationOnSignUp: true,
-    disableSignUp: true,
+    overrideDefaultEmailVerification: true,
   }),
   nextCookies(),
 ];

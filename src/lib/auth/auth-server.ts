@@ -25,7 +25,14 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
-    resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
+    resetPasswordTokenExpiresIn: 60 * 60, // 1 hour,
+  },
+  emailVerification: {
+    sendOnSignIn: true,
+    sendOnSignUp: true,
+    otpLength: 6,
+    expiresIn: 60 * 5,
+    autoSignInAfterVerification: true,
   },
   trustedOrigins: ['https://labs.duni.work', env.BETTER_AUTH_URL],
   plugins: authPlugins,

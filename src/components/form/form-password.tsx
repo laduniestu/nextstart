@@ -3,7 +3,6 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { type InputHTMLAttributes, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-
 import {
   FormControl,
   FormField,
@@ -17,6 +16,7 @@ import { cn } from '@/lib/utils';
 type Props<S> = {
   title: string;
   schema: keyof S & string;
+  rightElement?: React.ReactNode;
   className?: string;
 } & InputHTMLAttributes<HTMLInputElement>;
 
@@ -24,6 +24,7 @@ export function FormPassword<S>({
   title,
   schema,
   className,
+  rightElement,
   ...props
 }: Props<S>) {
   const form = useFormContext();
@@ -35,7 +36,10 @@ export function FormPassword<S>({
       name={schema}
       render={({ field }) => (
         <FormItem className="space-y-0.5">
-          <FormLabel htmlFor={schema}>{title}</FormLabel>
+          <div className="flex justify-between">
+            <FormLabel htmlFor={schema}>{title}</FormLabel>
+            {rightElement && <div>{rightElement}</div>}
+          </div>
           <FormControl>
             <div className="relative">
               <Input

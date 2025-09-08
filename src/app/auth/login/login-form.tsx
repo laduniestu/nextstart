@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import type z from 'zod/mini';
 import { LoginSchema, type LoginType } from '@/app/auth/login/type';
 import { FormButton } from '@/components/form/form-button';
+import { FormCheckbox } from '@/components/form/form-checkbox';
 import { FormError } from '@/components/form/form-error';
 import { FormInput } from '@/components/form/form-input';
 import { FormPassword } from '@/components/form/form-password';
@@ -20,6 +21,7 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get('callbackUrl');
+  const errorStatus = searchParams.get('status');
   const [isPending, startTransition] = useTransition();
   const [errorForm, setErrorForm] = useState<{ message: string } | null>(null);
   const form = useForm<LoginType>({
@@ -27,18 +29,29 @@ export default function LoginForm() {
     defaultValues: {
       email: '',
       password: '',
+      rememberMe: false,
     },
   });
+  if (errorStatus === 'OTP_TOO_MANY_ATTEMPTS' && !errorForm) {
+    setErrorForm({ message: 'Too many OTP attempts. Please try again later.' });
+  }
 
   const onSubmit = (values: z.infer<typeof LoginSchema>) => {
     startTransition(async () => {
       await authClient.signIn.email(values, {
         onError(ctx) {
+          if (ctx.error.code === 'EMAIL_NOT_VERIFIED') {
+            toast.error('Please verify your email before logging in.');
+            router.push(
+              `/auth/verify-email?email=${encodeURIComponent(values.email)}`
+            );
+            return;
+          }
           setErrorForm({ message: ctx.error.message });
         },
         onSuccess() {
-          router.push((callbackUrl || AFTER_LOGIN_URL) as never);
           toast.success('Login successful! Redirecting to your dashboard.');
+          router.push((callbackUrl || AFTER_LOGIN_URL) as never);
         },
       });
     });
@@ -53,13 +66,19 @@ export default function LoginForm() {
           schema="email"
           title="Email"
         />
-        <FormPassword<LoginType> schema="password" title="Password" />
-        <Link
-          className="-mt-4 flex text-sm underline-offset-4 hover:underline"
-          href="/auth/forgot-password"
-        >
-          Forgot your password?
-        </Link>
+        <FormPassword<LoginType>
+          rightElement={
+            <Link
+              className="flex text-sm underline underline-offset-2"
+              href="/auth/forgot-password"
+            >
+              Forgot your password?
+            </Link>
+          }
+          schema="password"
+          title="Password"
+        />
+        <FormCheckbox<LoginType> schema="rememberMe" title="Remember me" />
         <FormButton className="w-full" isLoading={isPending}>
           Login
         </FormButton>

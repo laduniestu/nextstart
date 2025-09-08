@@ -6,18 +6,18 @@ export const rateLimitConfig = {
   customRules: {
     '/sign-in/email': {
       window: 60,
-      max: 10,
+      max: 5,
     },
     '/email-otp/verify-email': () => {
       return {
-        window: 60,
-        max: 3,
+        window: 60 * 5,
+        max: 5,
       };
     },
     '/email-otp/send-verification-otp': () => {
       return {
-        window: 60 * 5,
-        max: 2,
+        window: 60 * 60,
+        max: 3,
       };
     },
   },
