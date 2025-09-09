@@ -34,7 +34,7 @@ const BreadcrumbDashboard = () => {
       <BreadcrumbList>
         {pathSegments.length > 0 ? (
           pathSegments.map((segment, index) => {
-            const href = `/admin/${pathSegments.slice(0, index + 1).join('/')}`;
+            const href = `/app/${pathSegments.slice(0, index + 1).join('/')}`;
             const displayText = transformSegment(segment);
 
             return (

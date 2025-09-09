@@ -54,3 +54,5 @@ export const auth = betterAuth({
   trustedOrigins: ['https://labs.duni.work', env.BETTER_AUTH_URL],
   plugins: authPlugins,
 });
+
+export type SessionType = typeof auth.$Infer.Session;

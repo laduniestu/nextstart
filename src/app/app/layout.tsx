@@ -1,5 +1,3 @@
-import { headers } from 'next/headers';
-import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { AppSidebar } from '@/app/app/sidebar';
 import BreadcrumbDashboard from '@/components/custom/breadcrumb';
@@ -10,16 +8,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { LOGIN_URL } from '@/config';
-import { auth } from '@/lib/auth/auth-server';
+import { getServerSession } from '@/lib/auth/helpers/get-session';
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-  if (!session) {
-    return redirect(LOGIN_URL);
-  }
+  const session = await getServerSession();
   return (
     <SidebarProvider>
       <AppSidebar user={session.user} />
