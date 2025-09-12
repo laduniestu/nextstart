@@ -1,6 +1,7 @@
 import NextTopLoader from 'nextjs-toploader';
 import type React from 'react';
 import { Toaster } from 'sonner';
+import { TanstackProvider } from './tanstack-provider';
 import { ThemeProvider } from './theme-provider';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -12,7 +13,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
     >
       <NextTopLoader />
-      {children}
+      <TanstackProvider>{children}</TanstackProvider>
       <Toaster />
     </ThemeProvider>
   );

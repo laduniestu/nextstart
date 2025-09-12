@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/useTemplate: <explanation> */
 import { env } from './env/client';
 
 export const APP_CONFIG: { mode: 'coming-soon' | 'maintenance' | 'live' } = {

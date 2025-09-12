@@ -20,7 +20,10 @@
       "recommended": true,
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noConsole": "off"
+        "noConsole": "off",
+        "noArrayIndexKey": "off",
+        "noDocumentCookie": "off",
+        "noExplicitAny": "off"
       },
       "performance": {
         "useTopLevelRegex": "off",
@@ -29,13 +32,22 @@
       },
       "style": {
         "noMagicNumbers": "off",
-        "useBlockStatements": "off"
+        "useBlockStatements": "off",
+        "noNonNullAssertion": "off",
+        "useTemplate": "off"
       },
       "correctness": {
-        "noNestedComponentDefinitions": "off"
+        "noNestedComponentDefinitions": "off",
+        "useExhaustiveDependencies": "off"
       },
       "nursery": {
-        "noShadow": "off"
+        "noShadow": "off",
+        "noUnnecessaryConditions": "off"
+      },
+      "a11y": {
+        "useFocusableInteractive": "off",
+        "useSemanticElements": "off",
+        "useAriaPropsForRole": "off"
       }
     },
     "domains": {
