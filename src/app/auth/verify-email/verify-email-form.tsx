@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 'use client';
 import { Loader2Icon } from 'lucide-react';
 import { useRouter } from 'next/navigation';

@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/suspicious/noDocumentCookie: <explanation> */
-/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 'use client';
 
 import { Slot } from '@radix-ui/react-slot';
