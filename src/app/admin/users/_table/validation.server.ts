@@ -44,3 +44,7 @@ export const userTableSearchParamsSchemaNuqs = createSearchParamsCache({
   to: parseAsString.withDefault('').withOptions({ clearOnDefault: true }),
   name: parseAsString.withDefault('').withOptions({ clearOnDefault: true }),
 });
+
+export type userTableSearchParamsTypeNuqs = Awaited<
+  ReturnType<typeof userTableSearchParamsSchemaNuqs.parse>
+>;
