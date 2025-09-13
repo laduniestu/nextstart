@@ -9,6 +9,7 @@ import type { Dispatch, SetStateAction } from 'react';
 //   adminUpdateUserStatusAction,
 // } from '@/app/admin/users/action-user';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -22,8 +23,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { UserType } from '@/db/types/user';
-import { formatDate } from '@/lib/utils';
+import { UserRoleEnum, type UserType } from '@/db/types/user';
+import { formatDate, toRoleCase } from '@/lib/utils';
 
 export interface UserActionTypes<TData> {
   row: Row<TData>;
@@ -61,67 +62,48 @@ export function getUsersTableColumns({
       ),
       enableSorting: false,
       enableHiding: false,
-      size: 50,
+      size: 1,
     },
     {
       accessorKey: 'name',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => <div className="w-20">{row.getValue('name')}</div>,
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
       enableSorting: true,
       enableHiding: false,
-    },
-    {
-      accessorKey: 'bio',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Bio" />
-      ),
-      cell: ({ row }) => {
-        return (
-          <div className="flex space-x-2">
-            <span className="max-w-[40rem] truncate font-medium">
-              {row.getValue('bio')}
-            </span>
-          </div>
-        );
-      },
-      enableSorting: false,
-      enableHiding: true,
     },
     {
       accessorKey: 'email',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Email" />
       ),
-      cell: ({ row }) => <div className="w-20">{row.getValue('email')}</div>,
+      cell: ({ row }) => <div>{row.getValue('email')}</div>,
       enableSorting: false,
       enableHiding: true,
     },
-    // {
-    //   accessorKey: 'role',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Role" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     const role = users.role.enumValues.find(
-    //       (role) => role === row.original.role
-    //     );
+    {
+      accessorKey: 'role',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Role" />
+      ),
+      cell: ({ row }) => {
+        const role = UserRoleEnum.find((role) => role === row.original.role);
 
-    //     if (!role) return null;
-    //     return (
-    //       <Badge variant={role === 'admin' ? 'default' : 'outline'}>
-    //         {toRoleCase(role)}
-    //       </Badge>
-    //     );
-    //   },
-    //   filterFn: (row, id, value) => {
-    //     return Array.isArray(value) && value.includes(row.getValue(id));
-    //   },
-    //   enableSorting: false,
-    //   enableHiding: true,
-    //   size: 50,
-    // },
+        if (!role) return null;
+        return (
+          <Badge variant={role === 'admin' ? 'default' : 'outline'}>
+            {toRoleCase(role)}
+          </Badge>
+        );
+      },
+      filterFn: (row, id, value) => {
+        return Array.isArray(value) && value.includes(row.getValue(id));
+      },
+      enableSorting: true,
+      enableHiding: true,
+      size: 100,
+    },
     // {
     //   accessorKey: 'status',
     //   header: ({ column }) => (
@@ -155,7 +137,7 @@ export function getUsersTableColumns({
         <DataTableColumnHeader column={column} title="Created At" />
       ),
       cell: ({ cell }) => formatDate(cell.getValue() as Date),
-      size: 100,
+      enableColumnFilter: true,
     },
     {
       id: 'actions',
@@ -195,7 +177,7 @@ export function getUsersTableColumns({
         //   });
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger asChild className="h-full w-full bg-red-500">
               <Button
                 aria-label="Open menu"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"

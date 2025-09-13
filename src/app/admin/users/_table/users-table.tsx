@@ -12,23 +12,22 @@ import {
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import type { DataTableFilterField } from '@/components/data-table/helper/types';
-import type { getUsersTable } from '@/core/logic/user';
-import type { UserType } from '@/db/types/user';
-// import type {
-//   getUsersRoles,
-//   getUsersStatuses,
-//   getUsersTable,
-// } from '@/controllers/user-controller';
+import type { getUsersRoles, getUsersTable } from '@/core/logic/user';
+import { UserRoleEnum, type UserType } from '@/db/types/user';
 import { useDataTable } from '@/hooks/use-data-table';
-
-// import { toRoleCase, toSentenceCase } from '@/lib/utils';
+import { toRoleCase } from '@/lib/utils';
 
 interface UsersTableProps {
-  promises: Promise<[Awaited<ReturnType<typeof getUsersTable>>]>;
+  promises: Promise<
+    [
+      Awaited<ReturnType<typeof getUsersTable>>,
+      Awaited<ReturnType<typeof getUsersRoles>>,
+    ]
+  >;
 }
 
 export function UsersTable({ promises }: UsersTableProps) {
-  const [{ data, pageCount }] = use(promises);
+  const [{ data, pageCount }, roleCounts] = use(promises);
   const [rowAction, setRowAction] = useState<UserActionTypes<UserType> | null>(
     null
   );
@@ -44,15 +43,15 @@ export function UsersTable({ promises }: UsersTableProps) {
       label: 'Name',
       placeholder: 'Filter name...',
     },
-    // {
-    //   id: 'role',
-    //   label: 'Role',
-    //   options: users.role.enumValues.map((role) => ({
-    //     label: toRoleCase(role),
-    //     value: role,
-    //     count: roleCounts[role],
-    //   })),
-    // },
+    {
+      id: 'role',
+      label: 'Role',
+      options: UserRoleEnum.map((role) => ({
+        label: toRoleCase(role),
+        value: role,
+        count: roleCounts[role],
+      })),
+    },
     // {
     //   id: 'status',
     //   label: 'Status',

@@ -4,3 +4,4 @@ import { user } from '../schema';
 
 export const UserSchema = createSelectSchema(user);
 export type UserType = z.infer<typeof UserSchema>;
+export const UserRoleEnum = user.role.enumValues;

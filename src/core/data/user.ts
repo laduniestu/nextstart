@@ -1,9 +1,10 @@
 'use server';
 import 'server-only';
-import { and, asc, count, desc, gte, ilike, lte } from 'drizzle-orm';
+import { and, asc, count, desc, gt, gte, ilike, lte } from 'drizzle-orm';
 import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
 import { db } from '@/db';
 import { user } from '@/db/schema';
+import type { UserType } from '@/db/types/user';
 
 export async function selectUsersTable(input: GetUserTableSchema, trx = db) {
   const offset = (input.page - 1) * input.perPage;
@@ -50,4 +51,24 @@ export async function selectUsersCountTable(
     .where(where)
     .execute()
     .then((res) => res[0]?.count ?? 0);
+}
+
+export async function selectRoleList() {
+  return await db
+    .select({
+      role: user.role,
+      count: count(),
+    })
+    .from(user)
+    .groupBy(user.role)
+    .having(gt(count(), 0))
+    .then((res) =>
+      res.reduce(
+        (acc, { role, count }) => {
+          acc[role] = count;
+          return acc;
+        },
+        {} as Record<UserType['role'], number>
+      )
+    );
 }
