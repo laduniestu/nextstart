@@ -11,7 +11,7 @@ export const getServerSession = cache(async () => {
 });
 
 export const getServerSessionRedirect = cache(async () => {
-  const session = await getServerSession()
+  const session = await getServerSession();
   if (!session) {
     return redirect(LOGIN_URL);
   }
@@ -19,7 +19,7 @@ export const getServerSessionRedirect = cache(async () => {
 });
 
 export const getServerSessionAdminRedirect = cache(async () => {
-  const session = await getServerSession()
+  const session = await getServerSession();
   if (!session || session.user.role !== 'admin') {
     return redirect(LOGIN_URL);
   }
