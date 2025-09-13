@@ -22,6 +22,7 @@
         "noUnknownAtRules": "off",
         "noConsole": "off",
         "noArrayIndexKey": "off",
+        "useAwait": "off",
         "noGlobalIsNan": "off",
         "noExplicitAny": "off",
         "noDocumentCookie": "off"

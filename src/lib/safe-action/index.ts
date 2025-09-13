@@ -3,7 +3,6 @@ import {
   createSafeActionClient,
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from 'next-safe-action';
-import { z } from 'zod';
 import {
   getServerSessionAdminRedirect,
   getServerSessionRedirect,
@@ -11,12 +10,7 @@ import {
 
 class ActionError extends Error {}
 
-const baseAction = createSafeActionClient({
-  defineMetadataSchema() {
-    return z.object({
-      actionName: z.string(),
-    });
-  },
+export const baseAction = createSafeActionClient({
   handleServerError(e) {
     console.error('Action error:', e.message);
     if (e instanceof ActionError) {
