@@ -12,12 +12,12 @@ export function createQueryClient() {
           const [json, meta] = serializer.serialize(queryKey);
           return JSON.stringify({ json, meta });
         },
-        staleTime: 60 * 1000, // > 0 to prevent immediate refetching on mount
+        retry: false,
+        retryOnMount: false,
+        staleTime: 60 * 1000,
       },
       dehydrate: {
-        shouldDehydrateQuery: (query) =>
-          defaultShouldDehydrateQuery(query) ||
-          query.state.status === 'pending',
+        shouldDehydrateQuery: (query) => defaultShouldDehydrateQuery(query),
         serializeData(data) {
           const [json, meta] = serializer.serialize(data);
           return { json, meta };

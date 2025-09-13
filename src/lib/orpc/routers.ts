@@ -1,7 +1,7 @@
-import { getUsersProcedures } from '@/core/rpc/user';
+import { getUserTableProcedures } from '@/core/rpc/user';
 
 export const router = {
   user: {
-    list: getUsersProcedures,
+    table: getUserTableProcedures,
   },
 };

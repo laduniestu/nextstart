@@ -43,6 +43,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.44.5",
+    "drizzle-zod": "^0.8.3",
     "input-otp": "^1.4.2",
     "jsx-email": "^2.7.3",
     "lucide-react": "^0.542.0",

@@ -27,7 +27,8 @@
         "noGlobalIsNan": "off"
       },
       "complexity": {
-        "noVoid": "off"
+        "noVoid": "off",
+        "noForEach": "off"
       },
       "performance": {
         "useTopLevelRegex": "off",
@@ -37,6 +38,7 @@
       "style": {
         "noMagicNumbers": "off",
         "useBlockStatements": "off",
+        "noEmptyBlockStatements": "off",
         "noNonNullAssertion": "off",
         "useTemplate": "off"
       },
