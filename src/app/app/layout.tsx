@@ -8,10 +8,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { getServerSession } from '@/lib/auth/helpers/get-session';
+import { getServerSessionRedirect } from '@/lib/auth/helpers/get-session';
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
-  const session = await getServerSession();
+  const session = await getServerSessionRedirect();
   return (
     <SidebarProvider>
       <AppSidebar user={session.user} />
