@@ -7,7 +7,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { getServerSessionAdmin } from '@/lib/auth/helpers/get-session';
+import { getServerSessionAdminRedirect } from '@/lib/auth/helpers/get-session';
 import { AdminSidebar } from './sidebar';
 
 export default async function AdminLayout({
@@ -15,7 +15,7 @@ export default async function AdminLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerSessionAdmin();
+  const session = await getServerSessionAdminRedirect();
   return (
     <SidebarProvider>
       <AdminSidebar user={session.user} />

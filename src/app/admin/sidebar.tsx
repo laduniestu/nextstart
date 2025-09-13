@@ -11,10 +11,11 @@ import {
 import type { Route } from 'next';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type {
-  ComponentProps,
-  ForwardRefExoticComponent,
-  RefAttributes,
+import {
+  type ComponentProps,
+  type ForwardRefExoticComponent,
+  type RefAttributes,
+  useState,
 } from 'react';
 import { UserMenu } from '@/components/custom/user-menu';
 import {
@@ -75,6 +76,17 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
       },
     ],
   };
+
+  const [openStates, setOpenStates] = useState(() => {
+    const initialState: Record<string, boolean> = {};
+    data.navMain.forEach((item) => {
+      initialState[item.url] =
+        path === item.url ||
+        (item.items?.some((subItem) => path === subItem.url) ?? false);
+    });
+    return initialState;
+  });
+
   return (
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>
@@ -100,10 +112,10 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
               <Collapsible
                 asChild
                 key={item.title}
-                open={
-                  path === item.url ||
-                  item.items?.some((subItem) => path === subItem.url)
+                onOpenChange={(val) =>
+                  setOpenStates((prev) => ({ ...prev, [item.url]: val }))
                 }
+                open={openStates[item.url]}
               >
                 <SidebarMenuItem>
                   <SidebarMenuButton
