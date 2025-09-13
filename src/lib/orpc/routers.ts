@@ -1,4 +1,4 @@
-import { getUsersProcedures } from '@/data-usecase/user';
+import { getUsersProcedures } from '@/core/rpc/user';
 
 export const router = {
   user: {
