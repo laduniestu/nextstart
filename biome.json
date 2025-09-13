@@ -18,6 +18,7 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+
       "suspicious": {
         "noUnknownAtRules": "off",
         "noConsole": "off"
@@ -29,7 +30,8 @@
       },
       "style": {
         "noMagicNumbers": "off",
-        "useBlockStatements": "off"
+        "useBlockStatements": "off",
+        "preferForOf": "off"
       },
       "correctness": {
         "noNestedComponentDefinitions": "off"
