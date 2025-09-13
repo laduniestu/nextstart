@@ -23,7 +23,11 @@
         "noConsole": "off",
         "noArrayIndexKey": "off",
         "noDocumentCookie": "off",
-        "noExplicitAny": "off"
+        "noExplicitAny": "off",
+        "noGlobalIsNan": "off"
+      },
+      "complexity": {
+        "noVoid": "off"
       },
       "performance": {
         "useTopLevelRegex": "off",
@@ -42,7 +46,8 @@
       },
       "nursery": {
         "noShadow": "off",
-        "noUnnecessaryConditions": "off"
+        "noUnnecessaryConditions": "off",
+        "useConsistentTypeDefinitions": "off"
       },
       "a11y": {
         "useFocusableInteractive": "off",
