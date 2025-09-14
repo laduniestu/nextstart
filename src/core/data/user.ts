@@ -1,57 +1,21 @@
 'use server';
 import 'server-only';
-import { and, asc, count, desc, gt, gte, ilike, lte } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  gt,
+  gte,
+  ilike,
+  inArray,
+  lte,
+} from 'drizzle-orm';
+import { unstable_cache } from 'next/cache';
 import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
 import { db } from '@/db';
 import { user } from '@/db/schema';
 import type { UserType } from '@/db/types/user';
-
-export async function selectUsersTable(input: GetUserTableSchema, trx = db) {
-  const offset = (input.page - 1) * input.perPage;
-  const limit = input.perPage;
-  const fromDate = input.from ? new Date(input.from) : undefined;
-  const toDate = input.to ? new Date(input.to) : undefined;
-  const where = and(
-    input.name ? ilike(user.name, `%${input.name}%`) : undefined,
-    fromDate ? gte(user.createdAt, fromDate) : undefined,
-    toDate ? lte(user.createdAt, toDate) : undefined
-  );
-  const orderBy =
-    input.sort.length > 0
-      ? input.sort.map((item) =>
-          item.desc ? desc(user[item.id]) : asc(user[item.id])
-        )
-      : [asc(user.createdAt)];
-
-  return trx
-    .select()
-    .from(user)
-    .limit(limit)
-    .offset(offset)
-    .where(where)
-    .orderBy(...orderBy);
-}
-export async function selectUsersCountTable(
-  input: GetUserTableSchema,
-  trx = db
-) {
-  const fromDate = input.from ? new Date(input.from) : undefined;
-  const toDate = input.to ? new Date(input.to) : undefined;
-  const where = and(
-    input.name ? ilike(user.name, `%${input.name}%`) : undefined,
-    fromDate ? gte(user.createdAt, fromDate) : undefined,
-    toDate ? lte(user.createdAt, toDate) : undefined
-  );
-
-  return trx
-    .select({
-      count: count(),
-    })
-    .from(user)
-    .where(where)
-    .execute()
-    .then((res) => res[0]?.count ?? 0);
-}
 
 export async function selectRoleList() {
   return await db
@@ -71,4 +35,83 @@ export async function selectRoleList() {
         {} as Record<UserType['role'], number>
       )
     );
+}
+
+export async function selectUsersTable(input: GetUserTableSchema) {
+  return await unstable_cache(
+    async () => {
+      try {
+        const offset = (input.page - 1) * input.perPage;
+        const where = and(
+          input.name ? ilike(user.name, `%${input.name}%`) : undefined,
+          input.role.length > 0 ? inArray(user.role, input.role) : undefined,
+          input.createdAt.length > 0
+            ? and(
+                input.createdAt[0]
+                  ? gte(
+                      user.createdAt,
+                      (() => {
+                        const date = new Date(input.createdAt[0]);
+                        date.setHours(0, 0, 0, 0);
+                        return date;
+                      })()
+                    )
+                  : undefined,
+                input.createdAt[1]
+                  ? lte(
+                      user.createdAt,
+                      (() => {
+                        const date = new Date(input.createdAt[1]);
+                        date.setHours(23, 59, 59, 999);
+                        return date;
+                      })()
+                    )
+                  : undefined
+              )
+            : undefined
+        );
+
+        const orderBy =
+          input.sort.length > 0
+            ? input.sort.map((item) =>
+                item.desc ? desc(user[item.id]) : asc(user[item.id])
+              )
+            : [asc(user.createdAt)];
+
+        const { data, total } = await db.transaction(async (tx) => {
+          const data = await tx
+            .select()
+            .from(user)
+            .limit(input.perPage)
+            .offset(offset)
+            .where(where)
+            .orderBy(...orderBy);
+
+          const total = await tx
+            .select({
+              count: count(),
+            })
+            .from(user)
+            .where(where)
+            .execute()
+            .then((res) => res[0]?.count ?? 0);
+
+          return {
+            data,
+            total,
+          };
+        });
+
+        const pageCount = Math.ceil(total / input.perPage);
+        return { data, pageCount };
+      } catch (_err) {
+        return { data: [], pageCount: 0 };
+      }
+    },
+    [JSON.stringify(input)],
+    {
+      revalidate: 1,
+      tags: ['users'],
+    }
+  )();
 }

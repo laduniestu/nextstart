@@ -1,5 +1,5 @@
 import { flexRender, type Table as TanstackTable } from '@tanstack/react-table';
-import type { HTMLAttributes } from 'react';
+import type * as React from 'react';
 
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import {
@@ -13,21 +13,21 @@ import {
 import { cn } from '@/lib/utils';
 import { getCommonPinningStyles } from './helper/pinning-styles';
 
-interface DataTableProps<TData> extends HTMLAttributes<HTMLDivElement> {
+interface DataTableProps<TData> extends React.ComponentProps<'div'> {
   table: TanstackTable<TData>;
-  showPagination?: boolean;
+  actionBar?: React.ReactNode;
 }
 
 export function DataTable<TData>({
   table,
+  actionBar,
   children,
   className,
-  showPagination = true,
   ...props
 }: DataTableProps<TData>) {
   return (
     <div
-      className={cn('w-full space-y-2.5 overflow-auto', className)}
+      className={cn('flex w-full flex-col gap-2.5 overflow-auto', className)}
       {...props}
     >
       {children}
@@ -36,24 +36,22 @@ export function DataTable<TData>({
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      colSpan={header.colSpan}
-                      key={header.id}
-                      style={{
-                        ...getCommonPinningStyles({ column: header.column }),
-                      }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    colSpan={header.colSpan}
+                    key={header.id}
+                    style={{
+                      ...getCommonPinningStyles({ column: header.column }),
+                    }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -92,11 +90,12 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
-      {showPagination && (
-        <div className="flex flex-col gap-2.5">
-          <DataTablePagination table={table} />
-        </div>
-      )}
+      <div className="flex flex-col gap-2.5">
+        <DataTablePagination table={table} />
+        {actionBar &&
+          table.getFilteredSelectedRowModel().rows.length > 0 &&
+          actionBar}
+      </div>
     </div>
   );
 }

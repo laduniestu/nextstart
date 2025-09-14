@@ -3,6 +3,7 @@
 import {
   type ColumnFiltersState,
   getCoreRowModel,
+  getFacetedMinMaxValues,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
@@ -26,18 +27,17 @@ import {
   useQueryState,
   useQueryStates,
 } from 'nuqs';
-import {
-  type TransitionStartFunction,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import * as React from 'react';
 import { getSortingStateParser } from '@/components/data-table/helper/parser';
-import type {
-  DataTableFilterField,
-  ExtendedSortingState,
-} from '@/components/data-table/helper/types';
-import { useDebouncedCallback } from '@/hooks/use-debounce-callback';
+import type { ExtendedColumnSort } from '@/components/data-table/helper/types';
+import { useDebouncedCallback } from './use-debounce-callback';
+
+const PAGE_KEY = 'page';
+const PER_PAGE_KEY = 'perPage';
+const SORT_KEY = 'sort';
+const ARRAY_SEPARATOR = ',';
+const DEBOUNCE_MS = 300;
+const THROTTLE_MS = 50;
 
 interface UseDataTableProps<TData>
   extends Omit<
@@ -50,38 +50,39 @@ interface UseDataTableProps<TData>
       | 'manualSorting'
     >,
     Required<Pick<TableOptions<TData>, 'pageCount'>> {
-  filterFields?: DataTableFilterField<TData>[];
+  initialState?: Omit<Partial<TableState>, 'sorting'> & {
+    sorting?: ExtendedColumnSort<TData>[];
+  };
   history?: 'push' | 'replace';
-  scroll?: boolean;
-  shallow?: boolean;
-  throttleMs?: number;
   debounceMs?: number;
-  startTransition?: TransitionStartFunction;
+  throttleMs?: number;
   clearOnDefault?: boolean;
   enableAdvancedFilter?: boolean;
-  initialState?: Omit<Partial<TableState>, 'sorting'> & {
-    sorting?: ExtendedSortingState<TData>;
-  };
+  scroll?: boolean;
+  shallow?: boolean;
+  startTransition?: React.TransitionStartFunction;
 }
 
-export function useDataTable<TData>({
-  pageCount = -1,
-  filterFields = [],
-  enableAdvancedFilter = false,
-  history = 'replace',
-  scroll = false,
-  shallow = true,
-  throttleMs = 100,
-  debounceMs = 700, // Increased debounce time to 700ms
-  clearOnDefault = false,
-  startTransition,
-  initialState,
-  ...props
-}: UseDataTableProps<TData>) {
-  const queryStateOptions = useMemo<
+export function useDataTable<TData>(props: UseDataTableProps<TData>) {
+  const {
+    columns,
+    pageCount = -1,
+    initialState,
+    history = 'replace',
+    debounceMs = DEBOUNCE_MS,
+    throttleMs = THROTTLE_MS,
+    clearOnDefault = false,
+    enableAdvancedFilter = false,
+    scroll = false,
+    shallow = true,
+    startTransition,
+    ...tableProps
+  } = props;
+
+  const queryStateOptions = React.useMemo<
     Omit<UseQueryStateOptions<string>, 'parse'>
-  >(() => {
-    return {
+  >(
+    () => ({
       history,
       scroll,
       shallow,
@@ -89,116 +90,141 @@ export function useDataTable<TData>({
       debounceMs,
       clearOnDefault,
       startTransition,
-    };
-  }, [
-    history,
-    scroll,
-    shallow,
-    throttleMs,
-    debounceMs,
-    clearOnDefault,
-    startTransition,
-  ]);
+    }),
+    [
+      history,
+      scroll,
+      shallow,
+      throttleMs,
+      debounceMs,
+      clearOnDefault,
+      startTransition,
+    ]
+  );
 
-  const [rowSelection, setRowSelection] = useState<RowSelectionState>(
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
     initialState?.rowSelection ?? {}
   );
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    initialState?.columnVisibility ?? {}
-  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>(initialState?.columnVisibility ?? {});
 
   const [page, setPage] = useQueryState(
-    'page',
+    PAGE_KEY,
     parseAsInteger.withOptions(queryStateOptions).withDefault(1)
   );
   const [perPage, setPerPage] = useQueryState(
-    'perPage',
+    PER_PAGE_KEY,
     parseAsInteger
       .withOptions(queryStateOptions)
       .withDefault(initialState?.pagination?.pageSize ?? 10)
   );
+
+  const pagination: PaginationState = React.useMemo(() => {
+    return {
+      pageIndex: page - 1, // zero-based index -> one-based index
+      pageSize: perPage,
+    };
+  }, [page, perPage]);
+
+  const onPaginationChange = React.useCallback(
+    (updaterOrValue: Updater<PaginationState>) => {
+      if (typeof updaterOrValue === 'function') {
+        const newPagination = updaterOrValue(pagination);
+        void setPage(newPagination.pageIndex + 1);
+        void setPerPage(newPagination.pageSize);
+      } else {
+        void setPage(updaterOrValue.pageIndex + 1);
+        void setPerPage(updaterOrValue.pageSize);
+      }
+    },
+    [pagination, setPage, setPerPage]
+  );
+
+  const columnIds = React.useMemo(() => {
+    return new Set(
+      columns.map((column) => column.id).filter(Boolean) as string[]
+    );
+  }, [columns]);
   const [sorting, setSorting] = useQueryState(
-    'sort',
-    getSortingStateParser<TData>()
+    SORT_KEY,
+    getSortingStateParser<TData>(columnIds)
       .withOptions(queryStateOptions)
       .withDefault(initialState?.sorting ?? [])
   );
 
-  const filterParsers = useMemo(() => {
-    return filterFields.reduce<
-      Record<string, Parser<string> | Parser<string[]>>
-    >((acc, field) => {
-      if (field.options) {
-        acc[field.id] = parseAsArrayOf(parseAsString, ',').withOptions(
-          queryStateOptions
-        );
+  const onSortingChange = React.useCallback(
+    (updaterOrValue: Updater<SortingState>) => {
+      if (typeof updaterOrValue === 'function') {
+        const newSorting = updaterOrValue(sorting);
+        setSorting(newSorting as ExtendedColumnSort<TData>[]);
       } else {
-        acc[field.id] = parseAsString.withOptions(queryStateOptions);
+        setSorting(updaterOrValue as ExtendedColumnSort<TData>[]);
+      }
+    },
+    [sorting, setSorting]
+  );
+
+  const filterableColumns = React.useMemo(() => {
+    if (enableAdvancedFilter) return [];
+
+    return columns.filter((column) => column.enableColumnFilter);
+  }, [columns, enableAdvancedFilter]);
+
+  const filterParsers = React.useMemo(() => {
+    if (enableAdvancedFilter) return {};
+
+    return filterableColumns.reduce<
+      Record<string, Parser<string> | Parser<string[]>>
+    >((acc, column) => {
+      if (column.meta?.options) {
+        acc[column.id ?? ''] = parseAsArrayOf(
+          parseAsString,
+          ARRAY_SEPARATOR
+        ).withOptions(queryStateOptions);
+      } else {
+        acc[column.id ?? ''] = parseAsString.withOptions(queryStateOptions);
       }
       return acc;
     }, {});
-  }, [filterFields, queryStateOptions]);
+  }, [filterableColumns, queryStateOptions, enableAdvancedFilter]);
 
   const [filterValues, setFilterValues] = useQueryStates(filterParsers);
 
   const debouncedSetFilterValues = useDebouncedCallback(
-    setFilterValues,
+    (values: typeof filterValues) => {
+      void setPage(1);
+      void setFilterValues(values);
+    },
     debounceMs
   );
 
-  const pagination: PaginationState = {
-    pageIndex: page - 1,
-    pageSize: perPage,
-  };
+  const initialColumnFilters: ColumnFiltersState = React.useMemo(() => {
+    if (enableAdvancedFilter) return [];
 
-  function onPaginationChange(updaterOrValue: Updater<PaginationState>) {
-    if (typeof updaterOrValue === 'function') {
-      const newPagination = updaterOrValue(pagination);
-      void setPage(newPagination.pageIndex + 1);
-      void setPerPage(newPagination.pageSize);
-    } else {
-      void setPage(updaterOrValue.pageIndex + 1);
-      void setPerPage(updaterOrValue.pageSize);
-    }
-  }
+    return Object.entries(filterValues).reduce<ColumnFiltersState>(
+      (filters, [key, value]) => {
+        if (value !== null) {
+          const processedValue = Array.isArray(value)
+            ? value
+            : typeof value === 'string' && /[^a-zA-Z0-9]/.test(value)
+              ? value.split(/[^a-zA-Z0-9]+/).filter(Boolean)
+              : [value];
 
-  function onSortingChange(updaterOrValue: Updater<SortingState>) {
-    if (typeof updaterOrValue === 'function') {
-      const newSorting = updaterOrValue(sorting) as ExtendedSortingState<TData>;
-      void setSorting(newSorting);
-    }
-  }
-
-  const initialColumnFilters: ColumnFiltersState = useMemo(() => {
-    return enableAdvancedFilter
-      ? []
-      : Object.entries(filterValues).reduce<ColumnFiltersState>(
-          (filters, [key, value]) => {
-            if (value !== null) {
-              filters.push({
-                id: key,
-                value: Array.isArray(value) ? value : [value],
-              });
-            }
-            return filters;
-          },
-          []
-        );
+          filters.push({
+            id: key,
+            value: processedValue,
+          });
+        }
+        return filters;
+      },
+      []
+    );
   }, [filterValues, enableAdvancedFilter]);
 
   const [columnFilters, setColumnFilters] =
-    useState<ColumnFiltersState>(initialColumnFilters);
+    React.useState<ColumnFiltersState>(initialColumnFilters);
 
-  const { searchableColumns, filterableColumns } = useMemo(() => {
-    return enableAdvancedFilter
-      ? { searchableColumns: [], filterableColumns: [] }
-      : {
-          searchableColumns: filterFields.filter((field) => !field.options),
-          filterableColumns: filterFields.filter((field) => field.options),
-        };
-  }, [filterFields, enableAdvancedFilter]);
-
-  const onColumnFiltersChange = useCallback(
+  const onColumnFiltersChange = React.useCallback(
     (updaterOrValue: Updater<ColumnFiltersState>) => {
       if (enableAdvancedFilter) return;
 
@@ -211,37 +237,28 @@ export function useDataTable<TData>({
         const filterUpdates = next.reduce<
           Record<string, string | string[] | null>
         >((acc, filter) => {
-          if (searchableColumns.find((col) => col.id === filter.id)) {
-            acc[filter.id] = filter.value as string;
-          } else if (filterableColumns.find((col) => col.id === filter.id)) {
-            acc[filter.id] = filter.value as string[];
+          if (filterableColumns.find((column) => column.id === filter.id)) {
+            acc[filter.id] = filter.value as string | string[];
           }
           return acc;
         }, {});
 
-        prev.forEach((prevFilter) => {
+        for (const prevFilter of prev) {
           if (!next.some((filter) => filter.id === prevFilter.id)) {
             filterUpdates[prevFilter.id] = null;
           }
-        });
-
-        void setPage(1);
+        }
 
         debouncedSetFilterValues(filterUpdates);
         return next;
       });
     },
-    [
-      debouncedSetFilterValues,
-      enableAdvancedFilter,
-      filterableColumns,
-      searchableColumns,
-      setPage,
-    ]
+    [debouncedSetFilterValues, filterableColumns, enableAdvancedFilter]
   );
 
   const table = useReactTable({
-    ...props,
+    ...tableProps,
+    columns,
     initialState,
     pageCount,
     state: {
@@ -249,7 +266,11 @@ export function useDataTable<TData>({
       sorting,
       columnVisibility,
       rowSelection,
-      columnFilters: enableAdvancedFilter ? [] : columnFilters,
+      columnFilters,
+    },
+    defaultColumn: {
+      ...tableProps.defaultColumn,
+      enableColumnFilter: false,
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
@@ -258,19 +279,16 @@ export function useDataTable<TData>({
     onColumnFiltersChange,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: enableAdvancedFilter
-      ? undefined
-      : getFilteredRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: enableAdvancedFilter ? undefined : getFacetedRowModel(),
-    getFacetedUniqueValues: enableAdvancedFilter
-      ? undefined
-      : getFacetedUniqueValues(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
     manualPagination: true,
     manualSorting: true,
     manualFiltering: true,
   });
 
-  return { table };
+  return { table, shallow, debounceMs, throttleMs };
 }

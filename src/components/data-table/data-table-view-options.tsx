@@ -2,8 +2,7 @@
 
 import type { Table } from '@tanstack/react-table';
 import { Check, ChevronsUpDown, Settings2 } from 'lucide-react';
-import { useRef } from 'react';
-
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -18,7 +17,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { cn, toSentenceCase } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface DataTableViewOptionsProps<TData> {
   table: Table<TData>;
@@ -27,61 +26,56 @@ interface DataTableViewOptionsProps<TData> {
 export function DataTableViewOptions<TData>({
   table,
 }: DataTableViewOptionsProps<TData>) {
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const columns = React.useMemo(
+    () =>
+      table
+        .getAllColumns()
+        .filter(
+          (column) =>
+            typeof column.accessorFn !== 'undefined' && column.getCanHide()
+        ),
+    [table]
+  );
 
   return (
-    <Popover modal>
+    <Popover>
       <PopoverTrigger asChild>
         <Button
           aria-label="Toggle columns"
-          className="ml-auto hidden h-8 gap-2 focus:outline-hidden focus:ring-1 focus:ring-ring focus-visible:ring-0 sm:flex"
-          ref={triggerRef}
+          className="ml-auto hidden h-8 lg:flex"
           role="combobox"
           size="sm"
           variant="outline"
         >
-          <Settings2 className="size-4" />
+          <Settings2 />
           View
-          <ChevronsUpDown className="ml-auto size-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-auto opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className="w-44 p-0"
-        onCloseAutoFocus={() => triggerRef.current?.focus()}
-      >
+      <PopoverContent align="end" className="w-44 p-0">
         <Command>
           <CommandInput placeholder="Search columns..." />
           <CommandList>
             <CommandEmpty>No columns found.</CommandEmpty>
             <CommandGroup>
-              {table
-                .getAllColumns()
-                .filter(
-                  (column) =>
-                    typeof column.accessorFn !== 'undefined' &&
-                    column.getCanHide()
-                )
-                .map((column) => {
-                  return (
-                    <CommandItem
-                      key={column.id}
-                      onSelect={() =>
-                        column.toggleVisibility(!column.getIsVisible())
-                      }
-                    >
-                      <span className="truncate">
-                        {toSentenceCase(column.id)}
-                      </span>
-                      <Check
-                        className={cn(
-                          'ml-auto size-4 shrink-0',
-                          column.getIsVisible() ? 'opacity-100' : 'opacity-0'
-                        )}
-                      />
-                    </CommandItem>
-                  );
-                })}
+              {columns.map((column) => (
+                <CommandItem
+                  key={column.id}
+                  onSelect={() =>
+                    column.toggleVisibility(!column.getIsVisible())
+                  }
+                >
+                  <span className="truncate">
+                    {column.columnDef.meta?.label ?? column.id}
+                  </span>
+                  <Check
+                    className={cn(
+                      'ml-auto size-4 shrink-0',
+                      column.getIsVisible() ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                </CommandItem>
+              ))}
             </CommandGroup>
           </CommandList>
         </Command>

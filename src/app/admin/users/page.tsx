@@ -23,7 +23,6 @@ export default async function UsersPage(props: {
             cellWidths={['3rem', '8rem', '20rem', '8rem', '8rem', '3rem']}
             columnCount={6}
             shrinkZero
-            toolbarCount={2}
           />
         }
       >

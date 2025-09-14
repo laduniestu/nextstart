@@ -5,17 +5,15 @@ import { use, useMemo, useState } from 'react';
 // import { UserDelete } from "@/app/admin/users/_form/user-delete";
 // import { UserPassword } from "@/app/admin/users/_form/user-password";
 // import { UserUpdate } from "@/app/admin/users/_form/user-update";
-import {
-  getUsersTableColumns,
-  type UserActionTypes,
-} from '@/app/admin/users/_table/users-table-column';
 import { DataTable } from '@/components/data-table/data-table';
+import { DataTableSortList } from '@/components/data-table/data-table-sort-list';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
-import type { DataTableFilterField } from '@/components/data-table/helper/types';
+import type { DataTableRowAction } from '@/components/data-table/helper/types';
 import type { getUsersRoles, getUsersTable } from '@/core/logic/user';
-import { UserRoleEnum, type UserType } from '@/db/types/user';
+import type { UserType } from '@/db/types/user';
 import { useDataTable } from '@/hooks/use-data-table';
-import { toRoleCase } from '@/lib/utils';
+import { TasksTableActionBar } from './user-table-action-bar';
+import { getUsersTableColumns } from './users-table-column';
 
 interface UsersTableProps {
   promises: Promise<
@@ -27,78 +25,44 @@ interface UsersTableProps {
 }
 
 export function UsersTable({ promises }: UsersTableProps) {
-  const [{ data, pageCount }, roleCounts] = use(promises);
-  const [rowAction, setRowAction] = useState<UserActionTypes<UserType> | null>(
-    null
-  );
+  const [{ data, pageCount }, roleCount] = use(promises);
+
+  const [rowAction, setRowAction] =
+    useState<DataTableRowAction<UserType> | null>(null);
   console.log(rowAction);
 
   const columns = useMemo(
-    () => getUsersTableColumns({ setRowAction }),
-    [setRowAction]
+    () =>
+      getUsersTableColumns({
+        roleCount,
+        setRowAction,
+      }),
+    [roleCount]
   );
-  const filterFields: DataTableFilterField<UserType>[] = [
-    {
-      id: 'name',
-      label: 'Name',
-      placeholder: 'Filter name...',
-    },
-    {
-      id: 'role',
-      label: 'Role',
-      options: UserRoleEnum.map((role) => ({
-        label: toRoleCase(role),
-        value: role,
-        count: roleCounts[role],
-      })),
-    },
-    // {
-    //   id: 'status',
-    //   label: 'Status',
-    //   options: users.status.enumValues.map((status) => ({
-    //     label: toSentenceCase(status),
-    //     value: status,
-    //     count: statusCounts[status],
-    //   })),
-    // },
-  ];
 
   const { table } = useDataTable({
     data,
     columns,
     pageCount,
-    filterFields,
     initialState: {
       sorting: [{ id: 'createdAt', desc: true }],
-      columnPinning: { right: ['actions'], left: ['select'] },
+      columnPinning: { right: ['actions'] },
     },
-    getRowId: (originalRow) => originalRow.id.toString(),
+    getRowId: (originalRow) => originalRow.id,
     shallow: false,
     clearOnDefault: true,
   });
+
   return (
-    <>
-      <DataTable table={table}>
-        <DataTableToolbar filterFields={filterFields} table={table}>
-          {/* <UsersTableToolbarActions table={table} /> */}
-        </DataTableToolbar>
-      </DataTable>
-      {/* <UserUpdate
-        onOpenChange={() => setRowAction(null)}
-        open={rowAction?.type === 'update'}
-        user={rowAction?.row.original ?? null}
-      />
-      <UserPassword
-        onOpenChange={() => setRowAction(null)}
-        open={rowAction?.type === 'password'}
-        user={rowAction?.row.original ?? null}
-      />
-      <UserDelete
-        onOpenChange={() => setRowAction(null)}
-        open={rowAction?.type === 'delete'}
-        showTrigger={false}
-        users={rowAction?.row.original ? [rowAction?.row.original] : []}
-      /> */}
-    </>
+    <DataTable actionBar={<TasksTableActionBar table={table} />} table={table}>
+      <DataTableToolbar table={table}>
+        <DataTableSortList align="end" table={table} />
+      </DataTableToolbar>
+    </DataTable>
+    // <DataTable table={table}>
+    //   <DataTableToolbar filterFields={filterFields} table={table}>
+    //     {/* <UsersTableToolbarActions table={table} /> */}
+    //   </DataTableToolbar>
+    // </DataTable>
   );
 }

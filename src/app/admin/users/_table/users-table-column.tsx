@@ -1,14 +1,10 @@
 'use client';
 
-import type { ColumnDef, Row } from '@tanstack/react-table';
-import { Ellipsis } from 'lucide-react';
-import type { Dispatch, SetStateAction } from 'react';
-
-// import {
-//   adminUpdateUserRoleAction,
-//   adminUpdateUserStatusAction,
-// } from '@/app/admin/users/action-user';
+import type { ColumnDef } from '@tanstack/react-table';
+import { CalendarIcon, CircleDashed, Ellipsis, Text } from 'lucide-react';
+import * as React from 'react';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
+import type { DataTableRowAction } from '@/components/data-table/helper/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,25 +13,26 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { UserRoleEnum, type UserType } from '@/db/types/user';
-import { formatDate, toRoleCase } from '@/lib/utils';
-
-export interface UserActionTypes<TData> {
-  row: Row<TData>;
-  type: 'update' | 'delete' | 'password';
-}
+import { formatDate } from '@/lib/utils';
 
 interface GetUsersTableColumnsProps {
-  setRowAction: Dispatch<SetStateAction<UserActionTypes<UserType> | null>>;
+  roleCount: Record<UserType['role'], number>;
+  setRowAction: React.Dispatch<
+    React.SetStateAction<DataTableRowAction<UserType> | null>
+  >;
 }
 
 export function getUsersTableColumns({
+  roleCount,
   setRowAction,
 }: GetUsersTableColumnsProps): ColumnDef<UserType>[] {
   return [
@@ -62,122 +59,84 @@ export function getUsersTableColumns({
       ),
       enableSorting: false,
       enableHiding: false,
-      size: 1,
+      size: 40,
     },
     {
+      id: 'name',
       accessorKey: 'name',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
       ),
-      cell: ({ row }) => <div>{row.getValue('name')}</div>,
-      enableSorting: true,
-      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <div className="flex items-center gap-2">
+            <span className="max-w-[31.25rem] truncate font-medium">
+              {row.getValue('name')}
+            </span>
+          </div>
+        );
+      },
+      meta: {
+        label: 'Name',
+        placeholder: 'Search name...',
+        variant: 'text',
+        icon: Text,
+      },
+      enableColumnFilter: true,
     },
     {
-      accessorKey: 'email',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Email" />
-      ),
-      cell: ({ row }) => <div>{row.getValue('email')}</div>,
-      enableSorting: false,
-      enableHiding: true,
-    },
-    {
+      id: 'role',
       accessorKey: 'role',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Role" />
       ),
-      cell: ({ row }) => {
-        const role = UserRoleEnum.find((role) => role === row.original.role);
+      cell: ({ cell }) => {
+        const role = UserRoleEnum.find(
+          (role) => role === cell.getValue<UserType['role']>()
+        );
 
         if (!role) return null;
+
         return (
-          <Badge variant={role === 'admin' ? 'default' : 'outline'}>
-            {toRoleCase(role)}
+          <Badge className="py-1 [&>svg]:size-3.5" variant="outline">
+            <span className="capitalize">{role}</span>
           </Badge>
         );
       },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id));
+      meta: {
+        label: 'Role',
+        variant: 'multiSelect',
+        options: UserRoleEnum.map((role) => ({
+          label: role.charAt(0).toUpperCase() + role.slice(1),
+          value: role,
+          count: roleCount[role],
+        })),
+        icon: CircleDashed,
       },
-      enableSorting: true,
-      enableHiding: true,
-      size: 100,
+      enableColumnFilter: true,
     },
-    // {
-    //   accessorKey: 'status',
-    //   header: ({ column }) => (
-    //     <DataTableColumnHeader column={column} title="Status" />
-    //   ),
-    //   cell: ({ row }) => {
-    //     const status = users.status.enumValues.find(
-    //       (status) => status === row.original.status
-    //     );
-    //     return (
-    //       <Badge
-    //         className={
-    //           status === 'active' ? 'bg-green-500/50' : 'bg-gray-500/20'
-    //         }
-    //         variant="secondary"
-    //       >
-    //         {status}
-    //       </Badge>
-    //     );
-    //   },
-    //   filterFn: (row, id, value) => {
-    //     return Array.isArray(value) && value.includes(row.getValue(id));
-    //   },
-    //   enableSorting: false,
-    //   enableHiding: true,
-    //   size: 50,
-    // },
     {
+      id: 'createdAt',
       accessorKey: 'createdAt',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created At" />
       ),
-      cell: ({ cell }) => formatDate(cell.getValue() as Date),
+      cell: ({ cell }) => formatDate(cell.getValue<Date>()),
+      meta: {
+        label: 'Created At',
+        variant: 'dateRange',
+        icon: CalendarIcon,
+      },
       enableColumnFilter: true,
     },
     {
       id: 'actions',
       cell({ row }) {
-        // const { execute: changeRole, isPending: pendingChangeRole } =
-        //   useServerAction(adminUpdateUserRoleAction, {
-        //     onError({ err }) {
-        //       toast({
-        //         title: 'Something went wrong',
-        //         description: err.message,
-        //         variant: 'destructive',
-        //       });
-        //     },
-        //     onSuccess() {
-        //       toast({
-        //         title: `User data ${row.original.name ? 'saved' : 'created'}`,
-        //         description: 'User can now login to their account.',
-        //       });
-        //     },
-        //   });
+        const [isUpdatePending, startUpdateTransition] = React.useTransition();
 
-        // const { execute: changeStatus, isPending: pendingChangeStatus } =
-        //   useServerAction(adminUpdateUserStatusAction, {
-        //     onError({ err }) {
-        //       toast({
-        //         title: 'Something went wrong',
-        //         description: err.message,
-        //         variant: 'destructive',
-        //       });
-        //     },
-        //     onSuccess() {
-        //       toast({
-        //         title: `User data ${row.original.name ? 'saved' : 'created'}`,
-        //         description: 'User can now login to their account.',
-        //       });
-        //     },
-        //   });
         return (
           <DropdownMenu>
-            <DropdownMenuTrigger asChild className="h-full w-full bg-red-500">
+            <DropdownMenuTrigger asChild>
               <Button
                 aria-label="Open menu"
                 className="flex size-8 p-0 data-[state=open]:bg-muted"
@@ -188,76 +147,57 @@ export function getUsersTableColumns({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40">
               <DropdownMenuItem
-                onSelect={() => setRowAction({ row, type: 'update' })}
+                onSelect={() => setRowAction({ row, variant: 'update' })}
               >
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => setRowAction({ row, type: 'delete' })}
-              >
-                Delete
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onSelect={() => setRowAction({ row, type: 'password' })}
-              >
-                Change Password
-              </DropdownMenuItem>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Change role</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>Roles</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuRadioGroup
-                    // onValueChange={(value) => {
-                    //   changeRole({
-                    //     id: row.original.id,
-                    //     role: value as UserRole,
-                    //   });
-                    // }}
-                    value={row.original.role!}
-                  >
-                    {/* {users.role.enumValues.map((label) => (
-                      <DropdownMenuRadioItem
-                        className="capitalize"
-                        disabled={pendingChangeRole}
-                        key={label}
-                        value={label}
-                      >
-                        {toRoleCase(label)}
-                      </DropdownMenuRadioItem>
-                    ))} */}
-                  </DropdownMenuRadioGroup>
-                </DropdownMenuSubContent>
-              </DropdownMenuSub>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Change status</DropdownMenuSubTrigger>
-                <DropdownMenuSubContent>
-                  {/* <DropdownMenuRadioGroup
                     onValueChange={(value) => {
-                      changeStatus({
-                        id: row.original.id,
-                        status: value as UserStatus,
+                      startUpdateTransition(() => {
+                        console.log(value);
+                        //   toast.promise(
+                        //     updateTask({
+                        //       id: row.original.id,
+                        //       label: value as Task['label'],
+                        //     }),
+                        //     {
+                        //       loading: 'Updating...',
+                        //       success: 'Label updated',
+                        //       error: (err) => getErrorMessage(err),
+                        //     }
+                        //   );
                       });
                     }}
-                    value={row.original.status}
+                    value={row.original.role}
                   >
-                    {users.status.enumValues.map((label) => (
+                    {UserRoleEnum.map((label) => (
                       <DropdownMenuRadioItem
                         className="capitalize"
-                        disabled={pendingChangeStatus}
+                        disabled={isUpdatePending}
                         key={label}
                         value={label}
                       >
                         {label}
                       </DropdownMenuRadioItem>
                     ))}
-                  </DropdownMenuRadioGroup> */}
+                  </DropdownMenuRadioGroup>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onSelect={() => setRowAction({ row, variant: 'delete' })}
+              >
+                Delete
+                <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
       },
-      size: 30,
+      size: 40,
     },
   ];
 }
