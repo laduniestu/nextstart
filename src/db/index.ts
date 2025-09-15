@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/style/noNonNullAssertion: <explanation> */
-/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -11,11 +9,11 @@ let pg: ReturnType<typeof postgres>;
 
 if (env.NODE_ENV === 'production') {
   pg = postgres(env.DATABASE_URL);
-  db = drizzle(pg, { schema, logger: true });
+  db = drizzle(pg, { schema });
 } else {
   if (!(global as any).database!) {
     pg = postgres(env.DATABASE_URL);
-    (global as any).db = drizzle(pg, { schema, logger: true });
+    (global as any).db = drizzle(pg, { schema });
   }
   db = (global as any).db;
 }

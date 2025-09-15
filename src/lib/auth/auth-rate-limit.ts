@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noExplicitAny: <explanation> */
 export const rateLimitConfig = {
   enabled: true,
   window: 60,

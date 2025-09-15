@@ -7,7 +7,7 @@ async function main() {
   console.info('⏳ Running seed...');
   const start = Date.now();
 
-  await seedUser({ count: 10 });
+  await seedUser({ count: 200 });
 
   const end = Date.now();
   console.info(`✅ Seed completed in ${end - start}ms`);

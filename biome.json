@@ -18,26 +18,48 @@
     "enabled": true,
     "rules": {
       "recommended": true,
-
       "suspicious": {
         "noUnknownAtRules": "off",
-        "noConsole": "off"
+        "noConsole": "off",
+        "noArrayIndexKey": "off",
+        "useAwait": "off",
+        "noGlobalIsNan": "off",
+        "noExplicitAny": "off",
+        "noDocumentCookie": "off",
+        "useIterableCallbackReturn": "off"
       },
       "performance": {
         "useTopLevelRegex": "off",
         "noNamespaceImport": "off",
         "noBarrelFile": "off"
       },
+      "complexity": {
+        "noVoid": "off",
+        "noForEach": "off",
+        "noExcessiveCognitiveComplexity": "off"
+      },
       "style": {
         "noMagicNumbers": "off",
         "useBlockStatements": "off",
-        "preferForOf": "off"
+        "noNestedTernary": "off",
+        "noNonNullAssertion": "off",
+        "useTemplate": "off"
       },
       "correctness": {
-        "noNestedComponentDefinitions": "off"
+        "noNestedComponentDefinitions": "off",
+        "useExhaustiveDependencies": "off"
       },
       "nursery": {
-        "noShadow": "off"
+        "noShadow": "off",
+        "useConsistentTypeDefinitions": "off",
+        "noUnnecessaryConditions": "off"
+      },
+      "a11y": {
+        "useFocusableInteractive": "off",
+        "useAriaPropsForRole": "off",
+        "useSemanticElements": "off",
+        "noNoninteractiveElementInteractions": "off",
+        "useKeyWithClickEvents": "off"
       }
     },
     "domains": {

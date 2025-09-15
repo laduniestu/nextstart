@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/style/useTemplate: <explanation> */
 import { env } from './env/client';
 
 export const APP_CONFIG: { mode: 'coming-soon' | 'maintenance' | 'live' } = {
@@ -13,7 +12,6 @@ export const APP_EMAIL =
   'no-reply@' + (APP_URL?.split('://')[1] || 'example.com');
 
 export const publicPathsConfig = {
-  // Exact paths that should be publicly accessible
   exactPaths: ['/'],
 
   // Exact paths for authentication

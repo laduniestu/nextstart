@@ -1,3 +1,4 @@
+import { env } from '@/env/server';
 import { auth } from '@/lib/auth/auth-server';
 
 export async function seedUser(input: { count: number }) {
@@ -5,8 +6,8 @@ export async function seedUser(input: { count: number }) {
     console.info('👤 Creating Admin Account');
     await auth.api.createUser({
       body: {
-        email: 'admin@dun.gg',
-        password: 'password123',
+        email: env.DEFAULT_ADMIN_EMAIL ?? 'admin@example.com',
+        password: env.DEFAULT_ADMIN_PASSWORD ?? 'password',
         name: 'Admin',
         role: 'admin',
       },
@@ -16,7 +17,7 @@ export async function seedUser(input: { count: number }) {
     console.error(err);
   }
   const count = input.count ?? 100;
-  console.info(`👤 Inserting ${count} user`);
+  console.info(`👤 Start inserting ${count} user`);
   try {
     for (let i = 0; i < count; i++) {
       await auth.api.createUser({
@@ -27,6 +28,7 @@ export async function seedUser(input: { count: number }) {
           role: 'user',
         },
       });
+      console.log(`👤 ${i + 1} user created ✓`);
     }
   } catch (err) {
     console.info('❌ Insert User Error');

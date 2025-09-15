@@ -8,6 +8,8 @@ export const env = createEnv({
     PLUNK_API_KEY: z.string().min(1),
     BETTER_AUTH_SECRET: z.string().min(1),
     BETTER_AUTH_URL: z.string().min(1),
+    DEFAULT_ADMIN_EMAIL: z.string().min(1).optional(),
+    DEFAULT_ADMIN_PASSWORD: z.string().min(1).optional(),
   },
   emptyStringAsUndefined: true,
   experimental__runtimeEnv: process.env,
