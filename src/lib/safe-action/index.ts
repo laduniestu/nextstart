@@ -18,13 +18,10 @@ export const baseAction = createSafeActionClient({
     }
     return DEFAULT_SERVER_ERROR_MESSAGE;
   },
-}).use(async ({ next, clientInput, metadata }) => {
+}).use(async ({ next }) => {
   const startTime = performance.now();
   const result = await next();
   const endTime = performance.now();
-  console.log('Result ->', result);
-  console.log('Client input ->', clientInput);
-  console.log('Metadata ->', metadata);
   console.log('Action execution took', endTime - startTime, 'ms');
   return result;
 });
