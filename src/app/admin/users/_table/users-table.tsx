@@ -10,6 +10,7 @@ import type { UserType } from '@/db/types/user';
 import { useDataTable } from '@/hooks/use-data-table';
 import { UsersTableActionBar } from './users-table-action-bar';
 import { getUsersTableColumns } from './users-table-column';
+import { UsersTableToolbarActions } from './users-table-toolbar-icon';
 
 interface UsersTableProps {
   promises: Promise<
@@ -52,6 +53,7 @@ export function UsersTable({ promises }: UsersTableProps) {
   return (
     <DataTable actionBar={<UsersTableActionBar table={table} />} table={table}>
       <DataTableToolbar table={table}>
+        <UsersTableToolbarActions table={table} />
         <DataTableSortList align="end" table={table} />
       </DataTableToolbar>
     </DataTable>
