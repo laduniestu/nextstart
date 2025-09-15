@@ -1,7 +1,5 @@
 'use server';
-import { APIError } from 'better-auth/api';
 import { revalidateTag } from 'next/cache';
-import { returnValidationErrors } from 'next-safe-action';
 import z from 'zod';
 import { adminAction } from '@/lib/safe-action';
 import {
@@ -18,29 +16,10 @@ import {
 export const actionAdminCreateUser = adminAction
   .inputSchema(CreateUserSchema)
   .action(async ({ parsedInput: value }) => {
-    try {
-      const user = await fnAdminCreateUser(value);
-      revalidateTag('users');
-      revalidateTag('usersrolecount');
-      return { user };
-    } catch (ctx) {
-      if (ctx instanceof APIError) {
-        if (ctx.body?.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
-          returnValidationErrors(CreateUserSchema, {
-            email: {
-              _errors: [ctx.message],
-            },
-          });
-        }
-        returnValidationErrors(CreateUserSchema, {
-          _errors: [ctx.message],
-        });
-      } else {
-        returnValidationErrors(CreateUserSchema, {
-          _errors: ['Something went wrong.', 'Please try again later'],
-        });
-      }
-    }
+    const user = await fnAdminCreateUser(value);
+    revalidateTag('users');
+    revalidateTag('usersrolecount');
+    return { user };
   });
 export const actionAdminUpdateUsersRoles = adminAction
   .inputSchema(UpdateUsersRolesSchema)

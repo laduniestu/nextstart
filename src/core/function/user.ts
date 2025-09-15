@@ -1,6 +1,8 @@
 'use server';
 import 'server-only';
+import { APIError } from 'better-auth';
 import { unstable_cache } from 'next/cache';
+import { returnValidationErrors } from 'next-safe-action';
 import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
 import type { UserType } from '@/db/types/user';
 import { auth } from '@/lib/auth/auth-server';
@@ -11,10 +13,11 @@ import {
   getUsersRoles,
   updateUsersRoles,
 } from '../data/user';
-import type {
-  CreateUserType,
-  DeleteUseresType,
-  UpdateUsersRolesType,
+import {
+  CreateUserSchema,
+  type CreateUserType,
+  type DeleteUseresType,
+  type UpdateUsersRolesType,
 } from '../validation/user';
 
 export async function fnGetUsers(input: GetUserTableSchema) {
@@ -46,12 +49,26 @@ export async function fnGetUsersRoles() {
 }
 
 export async function fnAdminCreateUser(value: CreateUserType) {
-  return await auth.api.createUser({
-    body: {
-      ...value,
-      data: { emailVerified: value.emailVerified },
-    },
-  });
+  try {
+    return await auth.api.createUser({
+      body: {
+        ...value,
+        data: { emailVerified: value.emailVerified },
+      },
+    });
+  } catch (ctx) {
+    if (ctx instanceof APIError) {
+      if (ctx.body?.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
+        returnValidationErrors(CreateUserSchema, {
+          email: {
+            _errors: [ctx.message],
+          },
+        });
+      }
+      throw new SystemError(ctx.message);
+    }
+    throw new SystemError('Something went wrong. Please try again later');
+  }
 }
 
 export async function fnAdminUpdateUsersRoles(
