@@ -6,7 +6,6 @@ import type { UserType } from '@/db/types/user';
 import { auth } from '@/lib/auth/auth-server';
 import { SystemError } from '@/lib/safe-action';
 import {
-  checkUserIdsExist,
   deleteUsers,
   getUsers,
   getUsersRoles,
@@ -58,10 +57,15 @@ export async function fnAdminCreateUser(value: CreateUserType) {
   return user;
 }
 
-export async function fnAdminUpdateUsersRoles(values: UpdateUsersRolesType) {
-  const result = await checkUserIdsExist(values.id);
-  if (!result.exists) {
-    throw new SystemError('Some IDs were not found in the database');
+export async function fnAdminUpdateUsersRoles(
+  values: UpdateUsersRolesType,
+  id: UserType['id']
+) {
+  if (values.id.length === 0) {
+    throw new SystemError('No IDs provided.');
+  }
+  if (values.id.includes(id)) {
+    throw new SystemError('You cannot delete your own account.');
   }
   const resultCount = await updateUsersRoles(values);
   revalidateTag('users');
@@ -69,10 +73,15 @@ export async function fnAdminUpdateUsersRoles(values: UpdateUsersRolesType) {
   return resultCount;
 }
 
-export async function fnAdminDeleteUsers(values: DeleteUseresType) {
-  const result = await checkUserIdsExist(values);
-  if (!result.exists) {
-    throw new SystemError('Some IDs were not found in the database');
+export async function fnAdminDeleteUsers(
+  values: DeleteUseresType,
+  id: UserType['id']
+) {
+  if (values.length === 0) {
+    throw new SystemError('No IDs provided.');
+  }
+  if (values.includes(id)) {
+    throw new SystemError('You cannot delete your own account.');
   }
   const resultCount = await deleteUsers(values);
   revalidateTag('users');

@@ -56,13 +56,13 @@ export const actionAdminCreateUser = adminAction
 export const actionAdminUpdateUsersRoles = adminAction
   .inputSchema(UpdateUsersRolesSchema)
   .outputSchema(z.number())
-  .action(async ({ parsedInput: values }) => {
-    return await fnAdminUpdateUsersRoles(values);
+  .action(async ({ parsedInput: values, ctx }) => {
+    return await fnAdminUpdateUsersRoles(values, ctx.user.id);
   });
 
 export const actionAdminDeleteUsers = adminAction
   .inputSchema(DeleteUseresSchema)
   .outputSchema(z.number())
-  .action(async ({ parsedInput: values }) => {
-    return await fnAdminDeleteUsers(values);
+  .action(async ({ parsedInput: values, ctx }) => {
+    return await fnAdminDeleteUsers(values, ctx.user.id);
   });

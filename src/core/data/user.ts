@@ -37,23 +37,6 @@ export async function deleteUsers(data: DeleteUseresType) {
   return res.length;
 }
 
-export async function checkUserIdsExist(ids: UserType['id'][]) {
-  if (ids.length === 0) return { exists: false, missing: [] };
-
-  const rows = await db
-    .select({ id: user.id })
-    .from(user)
-    .where(inArray(user.id, ids));
-
-  const foundIds = rows.map((r) => r.id);
-  const missing = ids.filter((id) => !foundIds.includes(id));
-
-  return {
-    exists: missing.length === 0,
-    missing,
-  };
-}
-
 export async function getUsersRoles() {
   return await db
     .select({
