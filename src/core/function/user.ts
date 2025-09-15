@@ -3,13 +3,17 @@ import 'server-only';
 import { APIError } from 'better-auth';
 import { unstable_cache } from 'next/cache';
 import { returnValidationErrors } from 'next-safe-action';
-import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
+import {
+  type GetUserTableSchema,
+  schemaGetUsers,
+} from '@/app/admin/users/_table/validation';
 import type { UserType } from '@/db/types/user';
 import { auth } from '@/lib/auth/auth-server';
 import { SystemError } from '@/lib/safe-action';
 import {
   deleteUsers,
   getUsers,
+  getUsersEmailVerified,
   getUsersRoles,
   updateUsersRoles,
 } from '../data/user';
@@ -24,6 +28,7 @@ export async function fnGetUsers(input: GetUserTableSchema) {
   return unstable_cache(
     async () => {
       try {
+        schemaGetUsers.parse(input);
         return await getUsers(input);
       } catch {
         return { data: [], pageCount: 0 };
@@ -45,6 +50,20 @@ export async function fnGetUsersRoles() {
     },
     ['usersrolecount'],
     { revalidate: 60 * 60, tags: ['usersrolecount'] }
+  )();
+}
+
+export async function fnUsersEmailVerified() {
+  return unstable_cache(
+    async () => {
+      try {
+        return await getUsersEmailVerified();
+      } catch {
+        return {} as Record<'verified' | 'unverified', number>;
+      }
+    },
+    ['usersemailverifiedcount'],
+    { revalidate: 60 * 60, tags: ['usersemailverifiedcount'] }
   )();
 }
 

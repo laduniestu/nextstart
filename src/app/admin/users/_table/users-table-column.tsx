@@ -26,6 +26,7 @@ import { formatDate } from '@/lib/utils';
 
 interface GetUsersTableColumnsProps {
   roleCount: Record<UserType['role'], number>;
+  emailVerifiedCount: Record<'verified' | 'unverified', number>;
   setRowAction: React.Dispatch<
     React.SetStateAction<DataTableRowAction<UserType> | null>
   >;
@@ -33,6 +34,7 @@ interface GetUsersTableColumnsProps {
 
 export function getUsersTableColumns({
   roleCount,
+  emailVerifiedCount,
   setRowAction,
 }: GetUsersTableColumnsProps): ColumnDef<UserType>[] {
   return [
@@ -104,20 +106,15 @@ export function getUsersTableColumns({
         options: [
           {
             label: 'Verified',
-            value: '1',
-            count: 999,
+            value: 'verified',
+            count: emailVerifiedCount['verified'],
           },
           {
-            label: 'Not Verified',
-            value: '0',
-            count: 888,
+            label: 'Unverified',
+            value: 'unverified',
+            count: emailVerifiedCount['unverified'],
           },
         ],
-        // options: UserRoleEnum.map((role) => ({
-        //   label: role.charAt(0).toUpperCase() + role.slice(1),
-        //   value: role,
-        //   count: roleCount[role],
-        // })),
       },
       enableColumnFilter: true,
     },

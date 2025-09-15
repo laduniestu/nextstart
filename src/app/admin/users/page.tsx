@@ -5,14 +5,22 @@ import { UsersTable } from '@/app/admin/users/_table/users-table';
 import { userTableSearchParamsCache } from '@/app/admin/users/_table/validation';
 import { Shell } from '@/components/custom/shell';
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
-import { fnGetUsers, fnGetUsersRoles } from '@/core/function/user';
+import {
+  fnGetUsers,
+  fnGetUsersRoles,
+  fnUsersEmailVerified,
+} from '@/core/function/user';
 import CreateUserPage from './_form/create';
 
 export default async function UsersPage(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const search = await userTableSearchParamsCache.parse(props.searchParams);
-  const promises = Promise.all([fnGetUsers(search), fnGetUsersRoles()]);
+  const promises = Promise.all([
+    fnGetUsers(search),
+    fnGetUsersRoles(),
+    fnUsersEmailVerified(),
+  ]);
 
   return (
     <Shell className="gap-2 p-4">

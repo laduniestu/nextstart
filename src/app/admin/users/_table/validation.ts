@@ -17,6 +17,7 @@ export const userTableSearchParamsCache = createSearchParamsCache({
   ]),
   name: parseAsString.withDefault(''),
   role: parseAsArrayOf(z.enum(UserRoleEnum)).withDefault([]),
+  emailVerified: parseAsString.withDefault(''),
   createdAt: parseAsArrayOf(z.coerce.number()).withDefault([]),
 });
 
@@ -33,6 +34,7 @@ export const schemaGetUsers = z.object({
     .default([{ id: 'createdAt', desc: true }]),
   name: z.string().default(''),
   role: z.array(z.enum(UserRoleEnum)).default([]),
+  emailVerified: z.enum(['verified', 'unverified', '']).optional(),
   createdAt: z.array(z.coerce.number()).default([]),
 });
 

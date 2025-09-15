@@ -36,8 +36,8 @@ const PAGE_KEY = 'page';
 const PER_PAGE_KEY = 'perPage';
 const SORT_KEY = 'sort';
 const ARRAY_SEPARATOR = ',';
-const DEBOUNCE_MS = 300;
-const THROTTLE_MS = 50;
+const DEBOUNCE_MS = 1000;
+const THROTTLE_MS = 200;
 
 interface UseDataTableProps<TData>
   extends Omit<
@@ -71,7 +71,7 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     history = 'replace',
     debounceMs = DEBOUNCE_MS,
     throttleMs = THROTTLE_MS,
-    clearOnDefault = false,
+    clearOnDefault = true,
     enableAdvancedFilter = false,
     scroll = false,
     shallow = true,

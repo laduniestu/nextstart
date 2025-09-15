@@ -5,7 +5,11 @@ import { DataTable } from '@/components/data-table/data-table';
 import { DataTableSortList } from '@/components/data-table/data-table-sort-list';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import type { DataTableRowAction } from '@/components/data-table/helper/types';
-import type { fnGetUsers, fnGetUsersRoles } from '@/core/function/user';
+import type {
+  fnGetUsers,
+  fnGetUsersRoles,
+  fnUsersEmailVerified,
+} from '@/core/function/user';
 import type { UserType } from '@/db/types/user';
 import { useDataTable } from '@/hooks/use-data-table';
 import { UsersTableActionBar } from './users-table-action-bar';
@@ -17,12 +21,13 @@ interface UsersTableProps {
     [
       Awaited<ReturnType<typeof fnGetUsers>>,
       Awaited<ReturnType<typeof fnGetUsersRoles>>,
+      Awaited<ReturnType<typeof fnUsersEmailVerified>>,
     ]
   >;
 }
 
 export function UsersTable({ promises }: UsersTableProps) {
-  const [{ data, pageCount }, roleCount] = use(promises);
+  const [{ data, pageCount }, roleCount, emailVerifiedCount] = use(promises);
 
   const [rowAction, setRowAction] =
     useState<DataTableRowAction<UserType> | null>(null);
@@ -32,9 +37,10 @@ export function UsersTable({ promises }: UsersTableProps) {
     () =>
       getUsersTableColumns({
         roleCount,
+        emailVerifiedCount,
         setRowAction,
       }),
-    [roleCount]
+    [roleCount, emailVerifiedCount]
   );
 
   const { table } = useDataTable({

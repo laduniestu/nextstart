@@ -36,7 +36,8 @@
       "complexity": {
         "noVoid": "off",
         "noForEach": "off",
-        "noExcessiveCognitiveComplexity": "off"
+        "noExcessiveCognitiveComplexity": "off",
+        "useLiteralKeys": "off"
       },
       "style": {
         "noMagicNumbers": "off",

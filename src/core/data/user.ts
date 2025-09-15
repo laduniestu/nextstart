@@ -5,6 +5,7 @@ import {
   asc,
   count,
   desc,
+  eq,
   gt,
   gte,
   ilike,
@@ -56,11 +57,33 @@ export async function getUsersRoles() {
       )
     );
 }
+export async function getUsersEmailVerified() {
+  return await db
+    .select({
+      emailVerified: user.emailVerified,
+      count: count(),
+    })
+    .from(user)
+    .groupBy(user.emailVerified)
+    .having(gt(count(), 0))
+    .then((res) =>
+      res.reduce(
+        (acc, { emailVerified, count }) => {
+          acc[emailVerified ? 'verified' : 'unverified'] = count;
+          return acc;
+        },
+        {} as Record<'verified' | 'unverified', number>
+      )
+    );
+}
 
 export async function getUsers(input: GetUserTableSchema) {
   const offset = (input.page - 1) * input.perPage;
   const where = and(
     input.name ? ilike(user.name, `%${input.name}%`) : undefined,
+    input.emailVerified
+      ? eq(user.emailVerified, input.emailVerified === 'verified')
+      : undefined,
     input.role.length > 0 ? inArray(user.role, input.role) : undefined,
     input.createdAt.length > 0
       ? and(
