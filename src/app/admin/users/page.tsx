@@ -5,13 +5,14 @@ import { UsersTable } from '@/app/admin/users/_table/users-table';
 import { userTableSearchParamsCache } from '@/app/admin/users/_table/validation';
 import { Shell } from '@/components/custom/shell';
 import { DataTableSkeleton } from '@/components/data-table/data-table-skeleton';
-import { getUsersRoles, getUsersTable } from '@/core/logic/user';
+import { fnGetUsers, fnGetUsersRoles } from '@/core/function/user';
 
 export default async function UsersPage(props: {
   searchParams: Promise<SearchParams>;
 }) {
   const search = await userTableSearchParamsCache.parse(props.searchParams);
-  const promises = Promise.all([getUsersTable(search), getUsersRoles()]);
+  const promises = Promise.all([fnGetUsers(search), fnGetUsersRoles()]);
+
   return (
     <Shell className="gap-2 p-4">
       <div className="flex items-center justify-between gap-4">

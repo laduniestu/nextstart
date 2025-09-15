@@ -1,25 +1,21 @@
 'use client';
 
 import { use, useMemo, useState } from 'react';
-
-// import { UserDelete } from "@/app/admin/users/_form/user-delete";
-// import { UserPassword } from "@/app/admin/users/_form/user-password";
-// import { UserUpdate } from "@/app/admin/users/_form/user-update";
 import { DataTable } from '@/components/data-table/data-table';
 import { DataTableSortList } from '@/components/data-table/data-table-sort-list';
 import { DataTableToolbar } from '@/components/data-table/data-table-toolbar';
 import type { DataTableRowAction } from '@/components/data-table/helper/types';
-import type { getUsersRoles, getUsersTable } from '@/core/logic/user';
+import type { fnGetUsers, fnGetUsersRoles } from '@/core/function/user';
 import type { UserType } from '@/db/types/user';
 import { useDataTable } from '@/hooks/use-data-table';
-import { TasksTableActionBar } from './user-table-action-bar';
+import { UsersTableActionBar } from './users-table-action-bar';
 import { getUsersTableColumns } from './users-table-column';
 
 interface UsersTableProps {
   promises: Promise<
     [
-      Awaited<ReturnType<typeof getUsersTable>>,
-      Awaited<ReturnType<typeof getUsersRoles>>,
+      Awaited<ReturnType<typeof fnGetUsers>>,
+      Awaited<ReturnType<typeof fnGetUsersRoles>>,
     ]
   >;
 }
@@ -54,15 +50,10 @@ export function UsersTable({ promises }: UsersTableProps) {
   });
 
   return (
-    <DataTable actionBar={<TasksTableActionBar table={table} />} table={table}>
+    <DataTable actionBar={<UsersTableActionBar table={table} />} table={table}>
       <DataTableToolbar table={table}>
         <DataTableSortList align="end" table={table} />
       </DataTableToolbar>
     </DataTable>
-    // <DataTable table={table}>
-    //   <DataTableToolbar filterFields={filterFields} table={table}>
-    //     {/* <UsersTableToolbarActions table={table} /> */}
-    //   </DataTableToolbar>
-    // </DataTable>
   );
 }

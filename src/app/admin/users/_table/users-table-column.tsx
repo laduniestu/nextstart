@@ -1,7 +1,7 @@
 'use client';
 
 import type { ColumnDef } from '@tanstack/react-table';
-import { CalendarIcon, CircleDashed, Ellipsis, Text } from 'lucide-react';
+import { CalendarIcon, CheckCircle2Icon, Ellipsis, Text } from 'lucide-react';
 import * as React from 'react';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { DataTableRowAction } from '@/components/data-table/helper/types';
@@ -85,6 +85,43 @@ export function getUsersTableColumns({
       enableColumnFilter: true,
     },
     {
+      id: 'emailVerified',
+      accessorKey: 'emailVerified',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Verified" />
+      ),
+      cell: ({ row }) => {
+        const verified = row.original.emailVerified;
+        return (
+          <CheckCircle2Icon
+            className={`${verified ? 'opacity-100' : 'opacity-20'}`}
+          />
+        );
+      },
+      meta: {
+        label: 'Verified',
+        variant: 'select',
+        options: [
+          {
+            label: 'Verified',
+            value: '1',
+            count: 999,
+          },
+          {
+            label: 'Not Verified',
+            value: '0',
+            count: 888,
+          },
+        ],
+        // options: UserRoleEnum.map((role) => ({
+        //   label: role.charAt(0).toUpperCase() + role.slice(1),
+        //   value: role,
+        //   count: roleCount[role],
+        // })),
+      },
+      enableColumnFilter: true,
+    },
+    {
       id: 'role',
       accessorKey: 'role',
       header: ({ column }) => (
@@ -111,7 +148,6 @@ export function getUsersTableColumns({
           value: role,
           count: roleCount[role],
         })),
-        icon: CircleDashed,
       },
       enableColumnFilter: true,
     },

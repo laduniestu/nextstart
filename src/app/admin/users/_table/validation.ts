@@ -20,6 +20,22 @@ export const userTableSearchParamsCache = createSearchParamsCache({
   createdAt: parseAsArrayOf(z.coerce.number()).withDefault([]),
 });
 
+export const schemaGetUsers = z.object({
+  page: z.number().default(1),
+  perPage: z.number().max(100).default(10),
+  sort: z
+    .array(
+      z.object({
+        id: z.string(),
+        desc: z.boolean(),
+      })
+    )
+    .default([{ id: 'createdAt', desc: true }]),
+  name: z.string().default(''),
+  role: z.array(z.enum(UserRoleEnum)).default([]),
+  createdAt: z.array(z.coerce.number()).default([]),
+});
+
 export type GetUserTableSchema = Awaited<
   ReturnType<typeof userTableSearchParamsCache.parse>
 >;

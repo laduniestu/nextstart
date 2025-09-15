@@ -24,11 +24,11 @@ const actions = ['update-role', 'export', 'delete'] as const;
 
 type Action = (typeof actions)[number];
 
-interface TasksTableActionBarProps {
+interface UsersTableActionBarProps {
   table: Table<UserType>;
 }
 
-export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
+export function UsersTableActionBar({ table }: UsersTableActionBarProps) {
   const rows = table.getFilteredSelectedRowModel().rows;
   const [isPending, startTransition] = React.useTransition();
   const [currentAction, setCurrentAction] = React.useState<Action | null>(null);
@@ -38,14 +38,14 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
     [isPending, currentAction]
   );
 
-  const onTaskUpdate = React.useCallback(
+  const onUserUpdate = React.useCallback(
     ({ field, value }: { field: 'role'; value: UserType['role'] }) => {
       setCurrentAction('update-role');
       startTransition(async () => {
         console.log(field, value);
 
         // TODO
-        // const { error } = await updateTasks({
+        // const { error } = await updateUsers({
         //   ids: rows.map((row) => row.original.id),
         //   [field]: value,
         // });
@@ -54,13 +54,13 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
         //   toast.error(error);
         //   return;
         // }
-        toast.success('Tasks updated');
+        toast.success('Users updated');
       });
     },
     [rows]
   );
 
-  const onTaskExport = React.useCallback(() => {
+  const onUserExport = React.useCallback(() => {
     setCurrentAction('export');
     startTransition(() => {
       exportTableToCSV(table, {
@@ -70,11 +70,11 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
     });
   }, [table]);
 
-  const onTaskDelete = React.useCallback(() => {
+  const onUserDelete = React.useCallback(() => {
     setCurrentAction('delete');
     startTransition(async () => {
       // TODO
-      // const { error } = await deleteTasks({
+      // const { error } = await deleteUsers({
       //   ids: rows.map((row) => row.original.id),
       // });
 
@@ -96,7 +96,7 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
       <div className="flex items-center gap-1.5">
         <Select
           onValueChange={(value: UserType['role']) =>
-            onTaskUpdate({ field: 'role', value })
+            onUserUpdate({ field: 'role', value })
           }
         >
           <SelectTrigger asChild>
@@ -120,7 +120,7 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
         </Select>
         {/* <Select
           onValueChange={(value: UserType['priority']) =>
-            onTaskUpdate({ field: 'priority', value })
+            onUserUpdate({ field: 'priority', value })
           }
         >
           <SelectTrigger asChild>
@@ -134,7 +134,7 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
           </SelectTrigger>
           <SelectContent align="center">
             <SelectGroup>
-              {tasks.priority.enumValues.map((priority) => (
+              {user.priority.enumValues.map((priority) => (
                 <SelectItem
                   className="capitalize"
                   key={priority}
@@ -148,17 +148,17 @@ export function TasksTableActionBar({ table }: TasksTableActionBarProps) {
         </Select> */}
         <DataTableActionBarAction
           isPending={getIsActionPending('export')}
-          onClick={onTaskExport}
+          onClick={onUserExport}
           size="icon"
-          tooltip="Export tasks"
+          tooltip="Export user"
         >
           <Download />
         </DataTableActionBarAction>
         <DataTableActionBarAction
           isPending={getIsActionPending('delete')}
-          onClick={onTaskDelete}
+          onClick={onUserDelete}
           size="icon"
-          tooltip="Delete tasks"
+          tooltip="Delete user"
         >
           <Trash2 />
         </DataTableActionBarAction>
