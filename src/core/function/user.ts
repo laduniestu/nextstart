@@ -1,6 +1,6 @@
 'use server';
 import 'server-only';
-import { revalidateTag, unstable_cache } from 'next/cache';
+import { unstable_cache } from 'next/cache';
 import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
 import type { UserType } from '@/db/types/user';
 import { auth } from '@/lib/auth/auth-server';
@@ -40,21 +40,18 @@ export async function fnGetUsersRoles() {
         return {} as Record<UserType['role'], number>;
       }
     },
-    ['users-role-count'],
-    { revalidate: 60 * 60, tags: ['users-role-count'] }
+    ['usersrolecount'],
+    { revalidate: 60 * 60, tags: ['usersrolecount'] }
   )();
 }
 
 export async function fnAdminCreateUser(value: CreateUserType) {
-  const user = await auth.api.createUser({
+  return await auth.api.createUser({
     body: {
       ...value,
       data: { emailVerified: value.emailVerified },
     },
   });
-  revalidateTag('users');
-  revalidateTag('users-role-count');
-  return user;
 }
 
 export async function fnAdminUpdateUsersRoles(
@@ -67,10 +64,7 @@ export async function fnAdminUpdateUsersRoles(
   if (values.id.includes(id)) {
     throw new SystemError('You cannot delete your own account.');
   }
-  const resultCount = await updateUsersRoles(values);
-  revalidateTag('users');
-  revalidateTag('users-role-count');
-  return resultCount;
+  return await updateUsersRoles(values);
 }
 
 export async function fnAdminDeleteUsers(
@@ -83,8 +77,5 @@ export async function fnAdminDeleteUsers(
   if (values.includes(id)) {
     throw new SystemError('You cannot delete your own account.');
   }
-  const resultCount = await deleteUsers(values);
-  revalidateTag('users');
-  revalidateTag('users-role-count');
-  return resultCount;
+  return await deleteUsers(values);
 }
