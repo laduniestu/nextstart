@@ -8,12 +8,12 @@ import {
   getServerSessionRedirect,
 } from '../auth/helpers/get-session';
 
-class ActionError extends Error {}
+export class SystemError extends Error {}
 
 export const baseAction = createSafeActionClient({
   handleServerError(e) {
     console.error('Action error:', e.message);
-    if (e instanceof ActionError) {
+    if (e instanceof SystemError) {
       return e.message;
     }
     return DEFAULT_SERVER_ERROR_MESSAGE;

@@ -15,6 +15,44 @@ import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
 import { db } from '@/db';
 import { user } from '@/db/schema';
 import type { UserType } from '@/db/types/user';
+import type {
+  DeleteUseresType,
+  UpdateUsersRolesType,
+} from '../validation/user';
+
+export async function updateUsersRoles(data: UpdateUsersRolesType) {
+  const res = await db
+    .update(user)
+    .set({ role: data.role })
+    .where(inArray(user.id, data.id))
+    .returning({ id: user.id });
+  return res.length;
+}
+
+export async function deleteUsers(data: DeleteUseresType) {
+  const res = await db
+    .delete(user)
+    .where(inArray(user.id, data))
+    .returning({ id: user.id });
+  return res.length;
+}
+
+export async function checkUserIdsExist(ids: UserType['id'][]) {
+  if (ids.length === 0) return { exists: false, missing: [] };
+
+  const rows = await db
+    .select({ id: user.id })
+    .from(user)
+    .where(inArray(user.id, ids));
+
+  const foundIds = rows.map((r) => r.id);
+  const missing = ids.filter((id) => !foundIds.includes(id));
+
+  return {
+    exists: missing.length === 0,
+    missing,
+  };
+}
 
 export async function getUsersRoles() {
   return await db

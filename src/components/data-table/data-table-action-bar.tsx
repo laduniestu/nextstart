@@ -61,7 +61,7 @@ function DataTableActionBar<TData>({
           animate={{ opacity: 1, y: 0 }}
           aria-orientation="horizontal"
           className={cn(
-            'fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit flex-wrap items-center justify-center gap-2 rounded-md border bg-background p-2 text-foreground shadow-sm',
+            'fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit flex-wrap items-center justify-center gap-2 rounded-md border bg-sidebar p-2 text-foreground shadow-sm',
             className
           )}
           exit={{ opacity: 0, y: 20 }}
@@ -96,7 +96,7 @@ function DataTableActionBarAction({
   const trigger = (
     <Button
       className={cn(
-        'gap-1.5 border border-secondary bg-secondary/50 hover:bg-secondary/70 [&>svg]:size-3.5',
+        'gap-1.5 border bg-background/90 hover:bg-background/10 [&>svg]:size-3.5',
         size === 'icon' ? 'size-7' : 'h-7',
         className
       )}
@@ -136,7 +136,7 @@ function DataTableActionBarSelection<TData>({
   }, [table]);
 
   return (
-    <div className="flex h-7 items-center rounded-md border pr-1 pl-2.5">
+    <div className="flex h-7 items-center rounded-md border bg-background/90 pr-1 pl-2.5">
       <span className="whitespace-nowrap text-xs">
         {table.getFilteredSelectedRowModel().rows.length} selected
       </span>

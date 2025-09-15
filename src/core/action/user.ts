@@ -1,9 +1,18 @@
 'use server';
 import { APIError } from 'better-auth/api';
 import { returnValidationErrors } from 'next-safe-action';
+import z from 'zod';
 import { adminAction } from '@/lib/safe-action';
-import { fnAdminCreateUser } from '../function/user';
-import { CreateUserSchema } from '../validation/user';
+import {
+  fnAdminCreateUser,
+  fnAdminDeleteUsers,
+  fnAdminUpdateUsersRoles,
+} from '../function/user';
+import {
+  CreateUserSchema,
+  DeleteUseresSchema,
+  UpdateUsersRolesSchema,
+} from '../validation/user';
 // import { schemaGetUsers } from '@/app/admin/users/_table/validation';
 // import { adminAction } from '@/lib/safe-action';
 // import { fnGetUsers, fnGetUsersRoles } from '../function/user';
@@ -43,4 +52,17 @@ export const actionAdminCreateUser = adminAction
         });
       }
     }
+  });
+export const actionAdminUpdateUsersRoles = adminAction
+  .inputSchema(UpdateUsersRolesSchema)
+  .outputSchema(z.number())
+  .action(async ({ parsedInput: values }) => {
+    return await fnAdminUpdateUsersRoles(values);
+  });
+
+export const actionAdminDeleteUsers = adminAction
+  .inputSchema(DeleteUseresSchema)
+  .outputSchema(z.number())
+  .action(async ({ parsedInput: values }) => {
+    return await fnAdminDeleteUsers(values);
   });

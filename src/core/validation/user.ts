@@ -22,5 +22,14 @@ export const CreateUserSchema = z.object({
   role: z.enum(UserRoleEnum),
   emailVerified: z.boolean(),
 });
-
 export type CreateUserType = z.infer<typeof CreateUserSchema>;
+
+export const UpdateUsersRolesSchema = z.object({
+  id: z.array(z.string().min(1)).min(1),
+  role: z.enum(UserRoleEnum),
+});
+export type UpdateUsersRolesType = z.infer<typeof UpdateUsersRolesSchema>;
+
+export const DeleteUseresSchema = z.array(z.string().min(1)).min(1);
+
+export type DeleteUseresType = z.infer<typeof DeleteUseresSchema>;
