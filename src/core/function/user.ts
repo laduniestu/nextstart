@@ -1,8 +1,11 @@
+'use server';
 import 'server-only';
-import { unstable_cache } from 'next/cache';
+import { revalidateTag, unstable_cache } from 'next/cache';
 import type { GetUserTableSchema } from '@/app/admin/users/_table/validation';
 import type { UserType } from '@/db/types/user';
+import { auth } from '@/lib/auth/auth-server';
 import { getUsers, getUsersRoles } from '../data/user';
+import type { CreateUserType } from '../validation/user';
 
 export async function fnGetUsers(input: GetUserTableSchema) {
   return unstable_cache(
@@ -30,4 +33,16 @@ export async function fnGetUsersRoles() {
     ['users-role-count'],
     { revalidate: 60 * 60, tags: ['users-role-count'] }
   )();
+}
+
+export async function fnAdminCreateUser(value: CreateUserType) {
+  const user = await auth.api.createUser({
+    body: {
+      ...value,
+      data: { emailVerified: value.emailVerified },
+    },
+  });
+  revalidateTag('users');
+  revalidateTag('users-role-count');
+  return user;
 }
