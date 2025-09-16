@@ -3,6 +3,7 @@
 import type { ColumnDef } from '@tanstack/react-table';
 import { CalendarIcon, CheckCircle2Icon, Ellipsis, Text } from 'lucide-react';
 import * as React from 'react';
+import { toast } from 'sonner';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
 import type { DataTableRowAction } from '@/components/data-table/helper/types';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +22,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { actionAdminUpdateUsersRoles } from '@/core/action/user';
 import { UserRoleEnum, type UserType } from '@/db/types/user';
+import { extractActionError } from '@/lib/safe-action/helper';
 import { formatDate } from '@/lib/utils';
 
 interface GetUsersTableColumnsProps {
@@ -189,20 +192,20 @@ export function getUsersTableColumns({
                 <DropdownMenuSubContent>
                   <DropdownMenuRadioGroup
                     onValueChange={(value) => {
-                      startUpdateTransition(() => {
-                        console.log(value);
-                        //   toast.promise(
-                        //     updateTask({
-                        //       id: row.original.id,
-                        //       label: value as Task['label'],
-                        //     }),
-                        //     {
-                        //       loading: 'Updating...',
-                        //       success: 'Label updated',
-                        //       error: (err) => getErrorMessage(err),
-                        //     }
-                        //   );
-                      });
+                      if (value !== row.original.role) {
+                        startUpdateTransition(async () => {
+                          const res = await actionAdminUpdateUsersRoles({
+                            id: [row.original.id],
+                            role: value as UserType['role'],
+                          });
+                          const error = extractActionError(res);
+                          if (error) {
+                            toast.error(error);
+                          } else {
+                            toast.success('Successfully updated user role.');
+                          }
+                        });
+                      }
                     }}
                     value={row.original.role}
                   >

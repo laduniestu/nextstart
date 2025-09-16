@@ -12,6 +12,7 @@ import type {
 } from '@/core/function/user';
 import type { UserType } from '@/db/types/user';
 import { useDataTable } from '@/hooks/use-data-table';
+import { DeleteUsersModal } from '../_form/delete';
 import { UsersTableActionBar } from './users-table-action-bar';
 import { getUsersTableColumns } from './users-table-column';
 import { UsersTableToolbarActions } from './users-table-toolbar-icon';
@@ -31,7 +32,6 @@ export function UsersTable({ promises }: UsersTableProps) {
 
   const [rowAction, setRowAction] =
     useState<DataTableRowAction<UserType> | null>(null);
-  console.log(rowAction);
 
   const columns = useMemo(
     () =>
@@ -57,11 +57,23 @@ export function UsersTable({ promises }: UsersTableProps) {
   });
 
   return (
-    <DataTable actionBar={<UsersTableActionBar table={table} />} table={table}>
-      <DataTableToolbar table={table}>
-        <UsersTableToolbarActions table={table} />
-        <DataTableSortList align="end" table={table} />
-      </DataTableToolbar>
-    </DataTable>
+    <>
+      <DataTable
+        actionBar={<UsersTableActionBar table={table} />}
+        table={table}
+      >
+        <DataTableToolbar table={table}>
+          <UsersTableToolbarActions table={table} />
+          <DataTableSortList align="end" table={table} />
+        </DataTableToolbar>
+      </DataTable>
+      <DeleteUsersModal
+        onOpenChange={() => setRowAction(null)}
+        onSuccess={() => rowAction?.row.toggleSelected(false)}
+        open={rowAction?.variant === 'delete'}
+        showTrigger={false}
+        users={rowAction?.row.original ? [rowAction?.row.original] : []}
+      />
+    </>
   );
 }

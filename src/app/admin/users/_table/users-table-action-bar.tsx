@@ -17,12 +17,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import {
-  actionAdminDeleteUsers,
-  actionAdminUpdateUsersRoles,
-} from '@/core/action/user';
+import { actionAdminUpdateUsersRoles } from '@/core/action/user';
 import { UserRoleEnum, type UserType } from '@/db/types/user';
 import { extractActionError } from '@/lib/safe-action/helper';
+import { DeleteUsersModal } from '../_form/delete';
 
 const actions = ['update-role', 'export', 'delete'] as const;
 
@@ -75,72 +73,62 @@ export function UsersTableActionBar({ table }: UsersTableActionBarProps) {
     });
   }, [table]);
 
-  const onUserDelete = useCallback(() => {
-    setCurrentAction('delete');
-    startTransition(async () => {
-      const res = await actionAdminDeleteUsers(
-        rows.map((row) => row.original.id)
-      );
-      const error = extractActionError(res);
-      if (error) {
-        toast.error(error);
-      } else {
-        const count = res.data!;
-        table.toggleAllRowsSelected(false);
-        toast.success(
-          `Successfully deleted ${count} user${count > 1 ? 's' : ''}.`
-        );
-      }
-    });
-  }, [rows, table]);
-
   return (
-    <DataTableActionBar table={table} visible={rows.length > 0}>
-      <DataTableActionBarSelection table={table} />
-      <Separator
-        className="hidden data-[orientation=vertical]:h-5 sm:block"
-        orientation="vertical"
+    <>
+      <DeleteUsersModal
+        onOpenChange={() => setCurrentAction(null)}
+        onSuccess={() => table.toggleAllRowsSelected(false)}
+        open={currentAction === 'delete'}
+        showTrigger={false}
+        users={rows.map((user) => user.original)}
       />
-      <div className="flex items-center gap-1.5">
-        <DataTableActionBarAction
-          isPending={getIsActionPending('export')}
-          onClick={onUserExport}
-          size="icon"
-          tooltip="Export user"
-        >
-          <IconDownload />
-        </DataTableActionBarAction>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <DataTableActionBarAction
-              isPending={getIsActionPending('update-role')}
-              size="icon"
-              tooltip="Update role"
-            >
-              <IconShieldCheck />
-            </DataTableActionBarAction>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
-            {UserRoleEnum.map((role) => (
-              <DropdownMenuItem
-                className="capitalize"
-                key={role}
-                onClick={() => onUserUpdate({ role })}
+      <DataTableActionBar table={table} visible={rows.length > 0}>
+        <DataTableActionBarSelection table={table} />
+        <Separator
+          className="hidden data-[orientation=vertical]:h-5 sm:block"
+          orientation="vertical"
+        />
+        <div className="flex items-center gap-1.5">
+          <DataTableActionBarAction
+            isPending={getIsActionPending('export')}
+            onClick={onUserExport}
+            size="icon"
+            tooltip="Export user"
+          >
+            <IconDownload />
+          </DataTableActionBarAction>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <DataTableActionBarAction
+                isPending={getIsActionPending('update-role')}
+                size="icon"
+                tooltip="Update role"
               >
-                {role}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <DataTableActionBarAction
-          isPending={getIsActionPending('delete')}
-          onClick={onUserDelete}
-          size="icon"
-          tooltip="Delete user"
-        >
-          <IconTrash />
-        </DataTableActionBarAction>
-      </div>
-    </DataTableActionBar>
+                <IconShieldCheck />
+              </DataTableActionBarAction>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              {UserRoleEnum.map((role) => (
+                <DropdownMenuItem
+                  className="capitalize"
+                  key={role}
+                  onClick={() => onUserUpdate({ role })}
+                >
+                  {role}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DataTableActionBarAction
+            isPending={getIsActionPending('delete')}
+            onClick={() => setCurrentAction('delete')}
+            size="icon"
+            tooltip="Delete user"
+          >
+            <IconTrash />
+          </DataTableActionBarAction>
+        </div>
+      </DataTableActionBar>
+    </>
   );
 }
