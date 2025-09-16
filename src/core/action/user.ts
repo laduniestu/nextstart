@@ -5,11 +5,13 @@ import { adminAction } from '@/lib/safe-action';
 import {
   fnAdminCreateUser,
   fnAdminDeleteUsers,
+  fnAdminUpdateUsersEmailVerified,
   fnAdminUpdateUsersRoles,
 } from '../function/user';
 import {
   CreateUserSchema,
   DeleteUseresSchema,
+  UpdateUsersEmailVerifiedSchema,
   UpdateUsersRolesSchema,
 } from '../validation/user';
 
@@ -26,6 +28,16 @@ export const actionAdminUpdateUsersRoles = adminAction
   .outputSchema(z.number())
   .action(async ({ parsedInput: values, ctx }) => {
     const res = await fnAdminUpdateUsersRoles(values, ctx.user.id);
+    revalidateTag('users');
+    revalidateTag('usersrolecount');
+    return res;
+  });
+
+export const actionAdminUpdateUsersEmailVerified = adminAction
+  .inputSchema(UpdateUsersEmailVerifiedSchema)
+  .outputSchema(z.number())
+  .action(async ({ parsedInput: values, ctx }) => {
+    const res = await fnAdminUpdateUsersEmailVerified(values, ctx.user.id);
     revalidateTag('users');
     revalidateTag('usersrolecount');
     return res;

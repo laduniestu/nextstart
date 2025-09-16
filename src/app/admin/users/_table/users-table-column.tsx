@@ -22,7 +22,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { actionAdminUpdateUsersRoles } from '@/core/action/user';
+import {
+  actionAdminUpdateUsersEmailVerified,
+  actionAdminUpdateUsersRoles,
+} from '@/core/action/user';
 import { UserRoleEnum, type UserType } from '@/db/types/user';
 import { extractActionError } from '@/lib/safe-action/helper';
 import { formatDate } from '@/lib/utils';
@@ -219,6 +222,49 @@ export function getUsersTableColumns({
                         {label}
                       </DropdownMenuRadioItem>
                     ))}
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
+                  Email Verification
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuRadioGroup
+                    onValueChange={(value) => {
+                      if (value !== String(row.original.emailVerified)) {
+                        startUpdateTransition(async () => {
+                          const res = await actionAdminUpdateUsersEmailVerified(
+                            {
+                              id: [row.original.id],
+                              emailVerified: value as 'false' | 'true',
+                            }
+                          );
+                          const error = extractActionError(res);
+                          if (error) {
+                            toast.error(error);
+                          } else {
+                            toast.success('Successfully updated user role.');
+                          }
+                        });
+                      }
+                    }}
+                    value={String(row.original.emailVerified)}
+                  >
+                    <DropdownMenuRadioItem
+                      className="capitalize"
+                      disabled={isUpdatePending}
+                      value="true"
+                    >
+                      Verified
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem
+                      className="capitalize"
+                      disabled={isUpdatePending}
+                      value="false"
+                    >
+                      Unverified
+                    </DropdownMenuRadioItem>
                   </DropdownMenuRadioGroup>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>

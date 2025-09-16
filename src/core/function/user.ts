@@ -15,12 +15,14 @@ import {
   getUsers,
   getUsersEmailVerified,
   getUsersRoles,
+  updateUserEmailVerified,
   updateUsersRoles,
 } from '../data/user';
 import {
   CreateUserSchema,
   type CreateUserType,
   type DeleteUseresType,
+  type UpdateUsersEmailVerifiedType,
   type UpdateUsersRolesType,
 } from '../validation/user';
 
@@ -101,6 +103,19 @@ export async function fnAdminUpdateUsersRoles(
     throw new SystemError('You cannot delete your own account.');
   }
   return await updateUsersRoles(values);
+}
+
+export async function fnAdminUpdateUsersEmailVerified(
+  values: UpdateUsersEmailVerifiedType,
+  userId: UserType['id']
+) {
+  if (values.id.length === 0) {
+    throw new SystemError('No IDs provided.');
+  }
+  if (values.id.includes(userId) && values.emailVerified === false) {
+    throw new SystemError('You cannot unverified your own account.');
+  }
+  return await updateUserEmailVerified(values);
 }
 
 export async function fnAdminDeleteUsers(

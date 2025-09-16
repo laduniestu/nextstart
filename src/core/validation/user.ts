@@ -30,6 +30,14 @@ export const UpdateUsersRolesSchema = z.object({
 });
 export type UpdateUsersRolesType = z.infer<typeof UpdateUsersRolesSchema>;
 
+export const UpdateUsersEmailVerifiedSchema = z.object({
+  id: z.array(z.string().min(1)).min(1),
+  emailVerified: z.enum(['true', 'false']).transform((val) => val === 'true'),
+});
+export type UpdateUsersEmailVerifiedType = z.infer<
+  typeof UpdateUsersEmailVerifiedSchema
+>;
+
 export const DeleteUseresSchema = z.array(z.string().min(1)).min(1);
 
 export type DeleteUseresType = z.infer<typeof DeleteUseresSchema>;

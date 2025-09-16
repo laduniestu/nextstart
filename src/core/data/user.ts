@@ -18,8 +18,20 @@ import { user } from '@/db/schema';
 import type { UserType } from '@/db/types/user';
 import type {
   DeleteUseresType,
+  UpdateUsersEmailVerifiedType,
   UpdateUsersRolesType,
 } from '../validation/user';
+
+export async function updateUserEmailVerified(
+  data: UpdateUsersEmailVerifiedType
+) {
+  const res = await db
+    .update(user)
+    .set({ emailVerified: data.emailVerified })
+    .where(inArray(user.id, data.id))
+    .returning({ id: user.id });
+  return res.length;
+}
 
 export async function updateUsersRoles(data: UpdateUsersRolesType) {
   const res = await db

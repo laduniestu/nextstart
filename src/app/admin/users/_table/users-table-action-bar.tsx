@@ -1,6 +1,11 @@
 'use client';
 
-import { IconDownload, IconShieldCheck, IconTrash } from '@tabler/icons-react';
+import {
+  IconDownload,
+  IconMailCheck,
+  IconShieldCheck,
+  IconTrash,
+} from '@tabler/icons-react';
 import type { Table } from '@tanstack/react-table';
 import { useCallback, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -17,12 +22,20 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { actionAdminUpdateUsersRoles } from '@/core/action/user';
+import {
+  actionAdminUpdateUsersEmailVerified,
+  actionAdminUpdateUsersRoles,
+} from '@/core/action/user';
 import { UserRoleEnum, type UserType } from '@/db/types/user';
 import { extractActionError } from '@/lib/safe-action/helper';
 import { DeleteUsersModal } from '../_form/delete';
 
-const actions = ['update-role', 'export', 'delete'] as const;
+const actions = [
+  'update-emailVerified',
+  'update-role',
+  'export',
+  'delete',
+] as const;
 
 type Action = (typeof actions)[number];
 
@@ -40,7 +53,7 @@ export function UsersTableActionBar({ table }: UsersTableActionBarProps) {
     [isPending, currentAction]
   );
 
-  const onUserUpdate = useCallback(
+  const onUserUpdateRole = useCallback(
     ({ role }: { role: UserType['role'] }) => {
       setCurrentAction('update-role');
       startTransition(async () => {
@@ -56,6 +69,29 @@ export function UsersTableActionBar({ table }: UsersTableActionBarProps) {
           table.toggleAllRowsSelected(false);
           toast.success(
             `Successfully updated role${count > 1 ? 's' : ''} for ${count} user${count > 1 ? 's' : ''}.`
+          );
+        }
+      });
+    },
+    [rows]
+  );
+
+  const onUserUpdateEmailVerified = useCallback(
+    ({ emailVerified }: { emailVerified: 'true' | 'false' }) => {
+      setCurrentAction('update-emailVerified');
+      startTransition(async () => {
+        const res = await actionAdminUpdateUsersEmailVerified({
+          id: rows.map((row) => row.original.id),
+          emailVerified,
+        });
+        const error = extractActionError(res);
+        if (error) {
+          toast.error(error);
+        } else {
+          const count = res.data!;
+          table.toggleAllRowsSelected(false);
+          toast.success(
+            `Successfully updated Email Verification for ${count} user${count > 1 ? 's' : ''}.`
           );
         }
       });
@@ -112,11 +148,40 @@ export function UsersTableActionBar({ table }: UsersTableActionBarProps) {
                 <DropdownMenuItem
                   className="capitalize"
                   key={role}
-                  onClick={() => onUserUpdate({ role })}
+                  onClick={() => onUserUpdateRole({ role })}
                 >
                   {role}
                 </DropdownMenuItem>
               ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <DataTableActionBarAction
+                isPending={getIsActionPending('update-emailVerified')}
+                size="icon"
+                tooltip="Update Email Verification"
+              >
+                <IconMailCheck />
+              </DataTableActionBarAction>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem
+                className="capitalize"
+                onClick={() =>
+                  onUserUpdateEmailVerified({ emailVerified: 'true' })
+                }
+              >
+                Verified
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="capitalize"
+                onClick={() =>
+                  onUserUpdateEmailVerified({ emailVerified: 'false' })
+                }
+              >
+                Unverified
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
           <DataTableActionBarAction
