@@ -21,6 +21,7 @@ export const actionAdminCreateUser = adminAction
     const user = await fnAdminCreateUser(value);
     revalidateTag('users');
     revalidateTag('usersrolecount');
+    revalidateTag('usersemailverifiedcount');
     return { user };
   });
 export const actionAdminUpdateUsersRoles = adminAction
@@ -39,7 +40,7 @@ export const actionAdminUpdateUsersEmailVerified = adminAction
   .action(async ({ parsedInput: values, ctx }) => {
     const res = await fnAdminUpdateUsersEmailVerified(values, ctx.user.id);
     revalidateTag('users');
-    revalidateTag('usersrolecount');
+    revalidateTag('usersemailverifiedcount');
     return res;
   });
 
@@ -50,5 +51,6 @@ export const actionAdminDeleteUsers = adminAction
     const res = await fnAdminDeleteUsers(values, ctx.user.id);
     revalidateTag('users');
     revalidateTag('usersrolecount');
+    revalidateTag('usersemailverifiedcount');
     return res;
   });
