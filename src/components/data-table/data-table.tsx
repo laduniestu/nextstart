@@ -1,6 +1,6 @@
+import { IconDatabaseX } from '@tabler/icons-react';
 import { flexRender, type Table as TanstackTable } from '@tanstack/react-table';
 import type * as React from 'react';
-
 import { DataTablePagination } from '@/components/data-table/data-table-pagination';
 import {
   Table,
@@ -80,10 +80,13 @@ export function DataTable<TData>({
             ) : (
               <TableRow>
                 <TableCell
-                  className="h-24 text-center"
+                  className="text-center"
                   colSpan={table.getAllColumns().length}
                 >
-                  No results.
+                  <div className="flex flex-col items-center justify-center space-y-2 py-10">
+                    <IconDatabaseX className="h-10 w-10 opacity-70" />
+                    <p className="text-center text-foreground">No Data Found</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
